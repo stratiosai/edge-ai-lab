@@ -211,7 +211,7 @@ Create these implementation folders only as their milestone begins; do not add e
 
 - [ ] Add minimal notification metadata with no private thumbnail by default.
 - [ ] Link notifications to the authenticated application.
-- [ ] Deploy a home VPN and verify phone access away from home.
+- [ ] Deploy a home VPN and verify phone access away from home. (Tailscale is the preferred candidate after Version 1 acceptance; read-only preflight on 2026-09-20 found it is not installed on either the Mac or Pi. Do not install, sign in, or expose ports until this phase is explicitly approved.)
 - [ ] Confirm no camera, API, database, or media port is publicly reachable.
 - [ ] Document credential rotation, device loss, and account revocation.
 

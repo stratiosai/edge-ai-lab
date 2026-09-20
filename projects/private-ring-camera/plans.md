@@ -45,7 +45,7 @@ Version 1 is complete only when all of these are demonstrated from a real phone 
 - [ ] Open a live camera view with acceptable delay and stable playback.
 - [ ] See camera, Pi, network, and storage health.
 - [ ] Browse a timeline covering the available portion of the last 24 hours.
-- [ ] Play a selected recording segment.
+- [x] Play a selected recording segment. (A real archived MP4 was opened through the authenticated media endpoint and rendered in the browser on 2026-09-20.)
 - [ ] Manually delete a selected segment and verify its media and timeline metadata are gone.
 - [ ] Export a selected time range and verify no automatic cloud or Photos copy occurs.
 - [ ] Confirm recordings expire automatically after 24 hours.

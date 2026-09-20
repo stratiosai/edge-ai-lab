@@ -51,7 +51,7 @@ Version 1 is complete only when all of these are demonstrated from a real phone 
 - [ ] Confirm recordings expire automatically after 24 hours.
 - [ ] Reboot the Pi and recover without manually restarting the application.
 - [ ] Disconnect the Mac temporarily, continue buffering on the Pi, then reconcile after reconnection.
-- [ ] Confirm an unauthenticated device cannot view the stream or recordings.
+- [x] Confirm an unauthenticated device cannot view the stream or recordings. (Live and segment API requests without a session returned HTTP 401 against the deployed HTTPS service on 2026-09-20.)
 
 Object detection and notifications are intentionally not required to pass this first gate.
 
@@ -187,7 +187,7 @@ Create these implementation folders only as their milestone begins; do not add e
 - [x] Reconnect and reconcile the buffered segments without duplicates. (A controlled Mac receiver outage retained Pi segments, then uploaded each once after recovery.)
 - [ ] Simulate Wi-Fi interruption and recovery.
 - [ ] Reboot Pi and Mac in different orders.
-- [ ] Verify least-privilege file access and authentication failure behavior.
+- [x] Verify least-privilege file access and authentication failure behavior. (Mac archive/runtime and Pi secrets, buffer, and logs are owner-only; unauthenticated live and segment API requests return HTTP 401.)
 - [ ] Complete every Version 1 success check above.
 
 **Gate:** Version 1 is accepted and `P040` may be marked complete for its core Ring-style capability.

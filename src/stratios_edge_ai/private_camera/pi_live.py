@@ -123,3 +123,7 @@ def main() -> None:
     server = ThreadingHTTPServer((args.host, args.port), make_handler(frames, token))
     LOG.info("serving token-protected live MJPEG on %s:%s", args.host, args.port)
     server.serve_forever()
+
+
+if __name__ == "__main__":
+    main()

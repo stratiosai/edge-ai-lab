@@ -213,3 +213,7 @@ def main() -> None:
     while True:
         run_once(config)
         time.sleep(config.poll_seconds)
+
+
+if __name__ == "__main__":
+    main()

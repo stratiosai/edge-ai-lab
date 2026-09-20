@@ -43,6 +43,13 @@ CREATE UNIQUE INDEX IF NOT EXISTS segments_idempotency_idx
     ON segments(started_at, ended_at, sha256);
 CREATE INDEX IF NOT EXISTS sessions_user_id_idx ON sessions(user_id);
 
+CREATE TABLE IF NOT EXISTS segment_motion (
+    segment_id TEXT PRIMARY KEY REFERENCES segments(id) ON DELETE CASCADE,
+    score REAL NOT NULL CHECK (score >= 0.0 AND score <= 1.0),
+    detected INTEGER NOT NULL CHECK (detected IN (0, 1)),
+    analyzed_at INTEGER NOT NULL
+);
+
 CREATE TABLE IF NOT EXISTS camera_health (
     singleton INTEGER PRIMARY KEY CHECK (singleton = 1),
     payload_json TEXT NOT NULL,

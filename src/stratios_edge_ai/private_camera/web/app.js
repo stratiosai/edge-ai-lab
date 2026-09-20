@@ -148,9 +148,10 @@ function populateScrubber() {
   slider.max = Math.max(0, selections.length - 1);
   slider.value = Math.min(Number(slider.value), Number(slider.max));
   const markers = document.querySelector("#segment-markers");
-  markers.replaceChildren(...selections.map((_, index) => {
+  markers.replaceChildren(...selections.map((segment, index) => {
     const marker = document.createElement("span");
     marker.className = "segment-marker";
+    if (segment.motion_detected) marker.classList.add("motion");
     if (index === Number(slider.value)) marker.classList.add("selected");
     return marker;
   }));

@@ -38,6 +38,8 @@ class Archive:
         ended_at: int,
         extension: str = ".mp4",
         expected_sha256: str | None = None,
+        motion_score: float | None = None,
+        motion_detected: bool | None = None,
     ) -> tuple[str, bool]:
         if not body:
             raise ValueError("segment is empty")
@@ -45,6 +47,10 @@ class Archive:
             raise ValueError("segment end must be after start")
         if extension not in {".mp4", ".m4s"}:
             raise ValueError("unsupported segment extension")
+        if motion_score is not None and not 0.0 <= motion_score <= 1.0:
+            raise ValueError("motion score must be between 0 and 1")
+        if motion_detected is not None and motion_score is None:
+            raise ValueError("motion detection requires a motion score")
 
         digest = hashlib.sha256(body).hexdigest()
         if expected_sha256 and not hmac.compare_digest(digest, expected_sha256.lower()):
@@ -94,6 +100,14 @@ class Archive:
                         int(time.time()),
                     ),
                 )
+                if motion_score is not None:
+                    connection.execute(
+                        """
+                        INSERT INTO segment_motion (segment_id, score, detected, analyzed_at)
+                        VALUES (?, ?, ?, ?)
+                        """,
+                        (segment_id, motion_score, int(bool(motion_detected)), int(time.time())),
+                    )
         except Exception:
             final_path.unlink(missing_ok=True)
             raise
@@ -150,12 +164,15 @@ class Archive:
             temporary.unlink(missing_ok=True)
             return False
 
-    def list_segments(self, since: int, until: int) -> list[dict[str, int | str]]:
+    def list_segments(self, since: int, until: int) -> list[dict[str, int | float | str]]:
         with self.database.connect() as connection:
             rows = connection.execute(
                 """
-                SELECT id, started_at, ended_at, size_bytes, sha256
+                SELECT segments.id, started_at, ended_at, size_bytes, sha256,
+                       COALESCE(segment_motion.score, 0.0) AS motion_score,
+                       COALESCE(segment_motion.detected, 0) AS motion_detected
                 FROM segments
+                LEFT JOIN segment_motion ON segment_motion.segment_id = segments.id
                 WHERE ended_at >= ? AND started_at <= ?
                 ORDER BY started_at DESC
                 """,

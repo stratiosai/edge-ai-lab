@@ -75,3 +75,11 @@ def test_partial_or_invalid_segment_stays_buffered_for_retry(tmp_path: Path, mon
     pi_agent.run_once(cfg)
     assert not partial.exists()
     assert partial.with_suffix(".partial").exists()
+
+
+def test_motion_score_uses_the_strongest_short_changes() -> None:
+    first = bytes([0, 0, 0, 0])
+    quiet = bytes([1, 1, 1, 1])
+    movement = bytes([255, 255, 255, 255])
+    assert pi_agent.motion_score_from_frames(first + quiet, 4) == round(1 / 255, 5)
+    assert pi_agent.motion_score_from_frames(first + quiet + movement, 4) >= 0.5

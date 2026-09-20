@@ -104,6 +104,28 @@ def test_ingest_timeline_media_export_and_verified_delete(tmp_path: Path) -> Non
     assert list((tmp_path / "private-camera" / "archive").iterdir()) == []
 
 
+def test_timeline_exposes_optional_motion_metadata(tmp_path: Path) -> None:
+    client = make_client(tmp_path)
+    now = int(time.time())
+    response = client.post(
+        "/api/ingest/segment",
+        content=b"motion",
+        headers={
+            "X-Ingest-Token": INGEST_TOKEN,
+            "X-Segment-Started-At": str(now - 60),
+            "X-Segment-Ended-At": str(now),
+            "X-Segment-Extension": ".mp4",
+            "X-Segment-Motion-Score": "0.125",
+            "X-Segment-Motion-Detected": "true",
+        },
+    )
+    assert response.status_code == 200
+    login(client)
+    segment = client.get("/api/segments").json()["segments"][0]
+    assert segment["motion_score"] == 0.125
+    assert segment["motion_detected"] == 1
+
+
 def test_authenticated_range_export_is_local_zip(tmp_path: Path) -> None:
     client = make_client(tmp_path)
     now = int(time.time())

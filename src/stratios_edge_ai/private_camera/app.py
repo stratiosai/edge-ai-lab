@@ -247,6 +247,8 @@ def create_app(config: CameraServerConfig | None = None) -> FastAPI:
         x_segment_ended_at: int = Header(),
         x_segment_extension: str = Header(default=".mp4"),
         x_segment_sha256: str | None = Header(default=None),
+        x_segment_motion_score: float | None = Header(default=None),
+        x_segment_motion_detected: bool | None = Header(default=None),
     ) -> dict[str, str]:
         body = await request.body()
         try:
@@ -259,6 +261,8 @@ def create_app(config: CameraServerConfig | None = None) -> FastAPI:
                 x_segment_ended_at,
                 x_segment_extension,
                 x_segment_sha256,
+                x_segment_motion_score,
+                x_segment_motion_detected,
             )
         except ArchiveFullError as exc:
             raise HTTPException(status_code=status.HTTP_507_INSUFFICIENT_STORAGE) from exc

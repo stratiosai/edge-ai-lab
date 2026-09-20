@@ -31,6 +31,7 @@ class PiAgentConfig:
     # Do not probe it until after the segment window plus a small finalization
     # margin, otherwise an in-progress file has no completed MP4 index yet.
     closed_file_age_seconds: int = 75
+    motion_threshold: float = 0.035
 
     def token(self) -> str:
         token = self.ingest_token_file.read_text(encoding="utf-8").strip()
@@ -73,6 +74,42 @@ def sha256_file(path: Path) -> str:
     return digest.hexdigest()
 
 
+def motion_score_from_frames(raw_frames: bytes, frame_size: int) -> float:
+    """Return robust low-resolution grayscale frame change, normalized 0..1."""
+    if frame_size <= 0 or len(raw_frames) < frame_size * 2:
+        return 0.0
+    frame_count = len(raw_frames) // frame_size
+    frames = memoryview(raw_frames[: frame_count * frame_size])
+    changes = [
+        sum(abs(current - previous) for current, previous in zip(
+            frames[offset : offset + frame_size], frames[offset - frame_size : offset]
+        )) / (frame_size * 255)
+        for offset in range(frame_size, frame_count * frame_size, frame_size)
+    ]
+    if not changes:
+        return 0.0
+    # A short movement should not be averaged away across an otherwise quiet minute.
+    strongest = sorted(changes)[-min(3, len(changes)) :]
+    return round(sum(strongest) / len(strongest), 5)
+
+
+def motion_summary(path: Path, threshold: float) -> tuple[float, bool]:
+    """Analyze a closed segment at 1 fps/64x36; never change the source media."""
+    width, height = 64, 36
+    result = subprocess.run(
+        [
+            "ffmpeg", "-nostdin", "-v", "error", "-i", str(path),
+            "-vf", f"fps=1,scale={width}:{height},format=gray",
+            "-f", "rawvideo", "-",
+        ],
+        check=True,
+        capture_output=True,
+        timeout=30,
+    )
+    score = motion_score_from_frames(result.stdout, width * height)
+    return score, score >= threshold
+
+
 def post_bytes(
     url: str,
     token: str,
@@ -93,6 +130,7 @@ def post_bytes(
 
 def upload_segment(config: PiAgentConfig, path: Path) -> bool:
     started_at, ended_at = segment_times(path)
+    motion_score, motion_detected = motion_summary(path, config.motion_threshold)
     response = post_bytes(
         f"{config.server_url.rstrip('/')}/api/ingest/segment",
         config.token(),
@@ -103,6 +141,8 @@ def upload_segment(config: PiAgentConfig, path: Path) -> bool:
             "X-Segment-Ended-At": str(ended_at),
             "X-Segment-Extension": path.suffix,
             "X-Segment-Sha256": sha256_file(path),
+            "X-Segment-Motion-Score": str(motion_score),
+            "X-Segment-Motion-Detected": str(motion_detected).lower(),
         },
         config.ca_file,
     )

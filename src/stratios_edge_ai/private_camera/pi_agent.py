@@ -27,7 +27,10 @@ class PiAgentConfig:
     max_buffer_seconds: int = 3600
     max_buffer_bytes: int = 2 * 1024**3
     poll_seconds: int = 10
-    closed_file_age_seconds: int = 5
+    # FFmpeg writes the active one-minute MP4 directly to its final filename.
+    # Do not probe it until after the segment window plus a small finalization
+    # margin, otherwise an in-progress file has no completed MP4 index yet.
+    closed_file_age_seconds: int = 75
 
     def token(self) -> str:
         token = self.ingest_token_file.read_text(encoding="utf-8").strip()
@@ -157,7 +160,14 @@ def closed_segments(config: PiAgentConfig, now: float | None = None) -> list[Pat
 def prune_buffer(config: PiAgentConfig, now: float | None = None) -> list[Path]:
     now = now if now is not None else time.time()
     removed: list[Path] = []
-    segments = closed_segments(config, now)
+    segments = sorted(
+        (
+            path
+            for path in config.buffer_dir.glob("*")
+            if path.is_file() and path.suffix in {".mp4", ".partial"}
+        ),
+        key=lambda path: path.stat().st_mtime,
+    )
 
     for path in list(segments):
         if now - path.stat().st_mtime > config.max_buffer_seconds:
@@ -190,7 +200,15 @@ def run_once(config: PiAgentConfig) -> None:
             if upload_segment(config, path):
                 path.unlink()
                 LOG.info("archived and removed local segment: %s", path.name)
-        except (OSError, ValueError, subprocess.SubprocessError, urllib.error.URLError) as exc:
+        except (ValueError, subprocess.SubprocessError) as exc:
+            partial_path = path.with_suffix(".partial")
+            if not partial_path.exists():
+                path.replace(partial_path)
+                LOG.warning("preserved invalid segment for bounded cleanup: %s (%s)", path.name, exc)
+            else:
+                LOG.warning("invalid segment remains deferred: %s (%s)", path.name, exc)
+            continue
+        except (OSError, urllib.error.URLError) as exc:
             LOG.warning("segment upload deferred for %s: %s", path.name, exc)
             break
 

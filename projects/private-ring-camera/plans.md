@@ -151,7 +151,7 @@ Create these implementation folders only as their milestone begins; do not add e
 - [x] Segment recordings into small files so interruption does not corrupt a full day.
 - [x] Add a configurable Pi circular buffer defaulting to one hour with a 2 GB hard ceiling.
 - [x] Add health and performance telemetry without logging private frames.
-- [x] Run capture under `systemd` with restart limits and useful logs. (Pi user services are enabled; reboot persistence still requires the one-time administrator `loginctl enable-linger stratiosai` command.)
+- [ ] Run capture under `systemd` with restart limits and useful logs. (Units are staged but disabled because user lingering is not enabled; detached manual services keep the test capture running until an administrator runs `loginctl enable-linger stratiosai`.)
 
 **Gate:** the Pi streams and records for two hours without unbounded memory, disk, or temperature growth.
 

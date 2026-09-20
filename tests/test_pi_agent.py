@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+import subprocess
 import time
 from pathlib import Path
 
@@ -37,6 +38,18 @@ def test_closed_segments_excludes_recent_and_non_mp4_files(tmp_path: Path) -> No
     assert closed_segments(cfg, now=200) == [old]
 
 
+def test_default_waits_for_the_full_recording_segment_before_upload(tmp_path: Path) -> None:
+    cfg = PiAgentConfig(
+        buffer_dir=tmp_path / "buffer",
+        server_url="https://camera.invalid",
+        ingest_token_file=tmp_path / "token",
+    )
+    cfg.ingest_token_file.write_text("test-token", encoding="utf-8")
+    active = segment(cfg.buffer_dir, "100.mp4", 10, 100)
+    assert closed_segments(cfg, now=174) == []
+    assert closed_segments(cfg, now=175) == [active]
+
+
 def test_prune_buffer_enforces_age_then_size_oldest_first(tmp_path: Path) -> None:
     cfg = config(tmp_path, max_seconds=300, max_bytes=20)
     expired = segment(cfg.buffer_dir, "0.mp4", 10, 0)
@@ -54,6 +67,11 @@ def test_partial_or_invalid_segment_stays_buffered_for_retry(tmp_path: Path, mon
     cfg = config(tmp_path)
     partial = segment(cfg.buffer_dir, "500.mp4", 10, time.time() - 10)
     monkeypatch.setattr(pi_agent, "post_health", lambda _: None)
-    monkeypatch.setattr(pi_agent, "upload_segment", lambda *_: (_ for _ in ()).throw(ValueError("N/A")))
+    monkeypatch.setattr(
+        pi_agent,
+        "upload_segment",
+        lambda *_: (_ for _ in ()).throw(subprocess.CalledProcessError(1, "ffprobe")),
+    )
     pi_agent.run_once(cfg)
-    assert partial.exists()
+    assert not partial.exists()
+    assert partial.with_suffix(".partial").exists()

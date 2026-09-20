@@ -96,6 +96,6 @@ projects/private-ring-camera/scripts/monitor_pi_soak.sh \
 
 ## Deployment boundary
 
-The Pi capture, live relay, and archive uploader run as user `systemd` services. Before enabling or changing them, confirm that the camera faces the agreed controlled indoor test area and excludes bedrooms, bathrooms, screens, private paperwork, and non-consenting people. The administrator command `loginctl enable-linger stratiosai` is still required once for service start after a Pi reboot without an interactive user login.
+The Pi capture, live relay, and archive uploader currently run as detached manual services for the controlled test. The user `systemd` units are staged but deliberately disabled until the administrator command `loginctl enable-linger stratiosai` is run once; without it, user services stop when the last SSH session ends and can corrupt the active recording segment. Before enabling or changing either setup, confirm that the camera faces the agreed controlled indoor test area and excludes bedrooms, bathrooms, screens, private paperwork, and non-consenting people.
 
 The deployment uses a device-only local TLS certificate: the Pi trusts the local CA for uploads, and each household phone must trust that CA before its browser can use the secure-cookie application. No port forwarding or public exposure is used. The reproducible service templates are under [infra](infra); credentials, generated certificates, media, and launchd copies remain outside Git.

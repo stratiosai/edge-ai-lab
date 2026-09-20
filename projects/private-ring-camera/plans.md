@@ -27,6 +27,7 @@ This initiative builds a private, local-first camera system using the existing R
 - [x] The Pi outage buffer defaults to one hour with a 2 GB hard ceiling; both are configurable, and the oldest local segments are removed first.
 - [x] Version 1 has one administrator account; the data model must permit separate household accounts later.
 - [x] Store the Mac archive outside Git and iCloud at `~/Library/Application Support/StratiosAI/edge-ai-camera/archive/` by default; allow a configurable external-storage path later.
+- [x] Version 1 includes one-way listening and synchronized audio recording from the Pi; two-way talk is deferred.
 - [x] Person and vehicle detection begin after the Version 1 media path works end to end.
 
 ## Definition of Version 1 success
@@ -38,6 +39,7 @@ Version 1 is complete only when all of these are demonstrated from a real phone 
 - [ ] See camera, Pi, network, and storage health.
 - [ ] Browse a timeline covering the available portion of the last 24 hours.
 - [ ] Play a selected recording segment.
+- [ ] Hear live Pi microphone audio and synchronized audio during playback.
 - [ ] Confirm recordings expire automatically after 24 hours.
 - [ ] Reboot the Pi and recover without manually restarting the application.
 - [ ] Disconnect the Mac temporarily, continue buffering on the Pi, then reconcile after reconnection.
@@ -128,6 +130,7 @@ Create these implementation folders only as their milestone begins; do not add e
 - [ ] Capture a real still image.
 - [ ] Record and play a short real video.
 - [ ] Record camera model, port, cable orientation, resolution, and stable frame rates.
+- [ ] Attach and detect a compatible USB microphone; no capture device was detected during the initial inventory.
 
 **Gate:** a documented command repeatedly captures valid media after a reboot.
 
@@ -201,7 +204,7 @@ Create these implementation folders only as their milestone begins; do not add e
 
 ### Deferred capabilities
 
-- [ ] Two-way audio after microphone, speaker, echo, consent, and privacy testing.
+- [ ] Two-way talk after adding a speaker and completing echo, feedback, consent, and privacy testing.
 - [ ] Multiple cameras after one camera is stable.
 - [ ] Facial identification only as a separate consent-based biometric initiative.
 - [ ] Cloud storage only after an explicit privacy, cost, and threat-model decision.
@@ -243,7 +246,7 @@ Record these for each milestone on the real Pi:
 - [x] Mac power behavior: display sleep allowed; system remains awake while plugged in and archiving.
 - [x] Recording mode: continuous short segments with motion markers on the timeline.
 - [ ] Which camera zones are allowed and which must be masked.
-- [ ] Whether audio is prohibited, deferred, or included later.
+- [x] Audio: Version 1 one-way listening and synchronized recording; two-way talk deferred. A USB microphone is still required.
 - [ ] Notification rules and quiet hours.
 - [ ] VPN choice and account recovery policy.
 - [ ] Measured acceptance targets for detection and vehicle counting.

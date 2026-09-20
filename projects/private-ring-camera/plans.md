@@ -42,7 +42,7 @@ This initiative builds a private, local-first camera system using the existing R
 Version 1 is complete only when all of these are demonstrated from a real phone and laptop:
 
 - [x] Sign in with an authorized household account. (The configured `admin` account held an authenticated seven-day secure session and rendered the protected dashboard on 2026-09-20.)
-- [ ] Open a live camera view with acceptable delay and stable playback.
+- [x] Open a live camera view with acceptable delay and stable playback. (On 2026-09-20, a temporary Pi timestamp overlay measured through the authenticated browser path was 0–1 seconds behind the Mac receipt time across three sequential samples; the 720p stream decoded at 1280×720. The overlay was then removed from the normal live view.)
 - [x] See camera, Pi, network, and storage health. (Authenticated UI verification on 2026-09-20 showed current Pi temperature, `throttled=0x0`, server/camera status, and archive size.)
 - [x] Browse a timeline covering the available portion of the last 24 hours. (Authenticated UI verification on 2026-09-20 showed 233 locally available recordings; full 24-hour coverage remains a separate retention gate.)
 - [x] Play a selected recording segment. (A real archived MP4 was opened through the authenticated media endpoint and rendered in the browser on 2026-09-20.)
@@ -152,7 +152,7 @@ Create these implementation folders only as their milestone begins; do not add e
 ### Phase 1 — reliable local media pipeline
 
 - [x] Build the Pi capture service using the supported Raspberry Pi camera stack.
-- [ ] Produce a 720p live-view stream suitable for a phone on the LAN with a target delay under two seconds. (Running and rendered at 1280×720; a live-only Pi clock overlay is available for an operator-free delivery-delay acceptance test. The target remains unchecked until the measured result is recorded.)
+- [x] Produce a 720p live-view stream suitable for a phone on the LAN with a target delay under two seconds. (On 2026-09-20, the temporary live-only Pi clock overlay measured 0–1 seconds through the authenticated browser path across three sequential samples at 1280×720; the overlay was removed afterward.)
 - [x] Record 1080p at 15 FPS using H.264 at approximately 2–3 Mbps.
 - [x] Segment recordings into small files so interruption does not corrupt a full day.
 - [x] Add a configurable Pi circular buffer defaulting to one hour with a 2 GB hard ceiling.
@@ -169,7 +169,7 @@ Create these implementation folders only as their milestone begins; do not add e
 - [x] Expire sessions after seven days by default; implement manual logout and administrator revocation of all sessions.
 - [x] Provide a local Mac command that resets the administrator password and revokes existing sessions without printing credentials.
 - [x] Show live video, connection state, recording state, disk use, and camera health.
-- [ ] Do not expose Pi or Mac service ports through the home router.
+- [ ] Do not expose Pi or Mac service ports through the home router. (2026-09-20 local baseline: Mac camera service listens on LAN port 8443; Pi listens on 8090 and SSH 22. Neither device has Tailscale, UPnP, or NAT-PMP mapping tooling installed. Router configuration and public reachability still require direct verification.)
 
 **Gate:** an authorized phone can view live video, while an unauthenticated browser is denied.
 

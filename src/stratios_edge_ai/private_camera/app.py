@@ -133,6 +133,18 @@ def create_app(config: CameraServerConfig | None = None) -> FastAPI:
     def javascript() -> FileResponse:
         return FileResponse(WEB_ROOT / "app.js", media_type="text/javascript")
 
+    @app.get("/latency-test", response_class=HTMLResponse)
+    def latency_test(_user: Annotated[dict[str, int | str], Depends(session_user)]) -> HTMLResponse:
+        return HTMLResponse((WEB_ROOT / "latency-test.html").read_text(encoding="utf-8"))
+
+    @app.get("/latency-test.css")
+    def latency_test_css() -> FileResponse:
+        return FileResponse(WEB_ROOT / "latency-test.css", media_type="text/css")
+
+    @app.get("/latency-test.js")
+    def latency_test_javascript() -> FileResponse:
+        return FileResponse(WEB_ROOT / "latency-test.js", media_type="text/javascript")
+
     @app.post("/api/login")
     def login(payload: LoginRequest, request: Request, response: Response) -> dict[str, str]:
         client = request.client.host if request.client else "unknown"

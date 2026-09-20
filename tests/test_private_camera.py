@@ -56,6 +56,16 @@ def test_protected_routes_require_authentication(tmp_path: Path) -> None:
     assert client.get("/api/segments").status_code == 401
     assert client.get("/api/live").status_code == 401
     assert client.get("/api/segments/not-a-real-segment/thumbnail").status_code == 401
+    assert client.get("/latency-test").status_code == 401
+
+
+def test_authenticated_latency_reference_is_available(tmp_path: Path) -> None:
+    client = make_client(tmp_path)
+    login(client)
+    reference = client.get("/latency-test")
+    assert reference.status_code == 200
+    assert "LATENCY REFERENCE" in reference.text
+    assert client.get("/latency-test.js").status_code == 200
 
 
 def test_login_session_logout_and_security_headers(tmp_path: Path) -> None:

@@ -152,7 +152,7 @@ Create these implementation folders only as their milestone begins; do not add e
 ### Phase 1 — reliable local media pipeline
 
 - [x] Build the Pi capture service using the supported Raspberry Pi camera stack.
-- [ ] Produce a 720p live-view stream suitable for a phone on the LAN with a target delay under two seconds. (Running and rendered at 1280×720; glass-to-glass latency remains to be measured.)
+- [ ] Produce a 720p live-view stream suitable for a phone on the LAN with a target delay under two seconds. (Running and rendered at 1280×720; a live-only Pi clock overlay is available for an operator-free delivery-delay acceptance test. The target remains unchecked until the measured result is recorded.)
 - [x] Record 1080p at 15 FPS using H.264 at approximately 2–3 Mbps.
 - [x] Segment recordings into small files so interruption does not corrupt a full day.
 - [x] Add a configurable Pi circular buffer defaulting to one hour with a 2 GB hard ceiling.

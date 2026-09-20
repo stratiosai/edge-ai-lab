@@ -18,6 +18,13 @@ fi
 command -v rpicam-vid >/dev/null
 command -v ffmpeg >/dev/null
 
+LIVE_VIDEO_FILTER="scale=1280:720:force_original_aspect_ratio=decrease"
+if [ "${EDGE_CAMERA_LIVE_DEBUG_CLOCK:-0}" = "1" ]; then
+  # This is an opt-in acceptance-test aid. It marks the low-resolution live
+  # preview only; the authoritative 1080p archive remains unaltered.
+  LIVE_VIDEO_FILTER="${LIVE_VIDEO_FILTER},drawtext=fontfile=/usr/share/fonts/truetype/dejavu/DejaVuSansMono-Bold.ttf:text=%{localtime}:x=18:y=18:fontsize=38:fontcolor=white:box=1:boxcolor=black@0.65"
+fi
+
 # Capture once, then make two deliberately separate outputs: durable one-minute
 # H.264 archive segments and a 720p MJPEG FIFO. The Pi live service reads that
 # FIFO and exposes a token-protected multipart stream that the Mac proxies.
@@ -36,5 +43,5 @@ rpicam-vid \
   -f segment -segment_time 60 -reset_timestamps 1 -strftime 1 \
   -segment_format mp4 -segment_format_options movflags=+faststart \
   "${BUFFER_DIR}/%s.mp4" \
-  -map 0:v:0 -vf "scale=1280:720:force_original_aspect_ratio=decrease" -r 10 \
+  -map 0:v:0 -vf "$LIVE_VIDEO_FILTER" -r 10 \
   -c:v mjpeg -q:v 6 -f mpjpeg "$LIVE_FIFO"

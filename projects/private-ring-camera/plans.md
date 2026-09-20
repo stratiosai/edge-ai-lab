@@ -261,7 +261,8 @@ Record these for each milestone on the real Pi:
 - [x] Mac power behavior: display sleep allowed; system remains awake while plugged in and archiving.
 - [x] Recording mode: continuous short segments with motion markers on the timeline.
 - [x] Initial field-of-view boundary: controlled workspace or unused corner; exclude bedrooms, bathrooms, screens, private paperwork, and non-consenting people.
-- [ ] Confirm the physical camera position and privacy mask from a real preview before continuous recording begins.
+- [x] Confirm the physical camera position from a real preview before continuous recording begins. (Operator approved the current indoor household placement on 2026-09-20; Version 1 remains local-only.)
+- [ ] Configure a privacy mask before any outdoor, shared-space, or otherwise privacy-sensitive deployment.
 - [x] Placement sequence: controlled indoor test area first; window, driveway, or outdoor deployment only after Version 1 acceptance.
 - [x] Audio boundary: Version 1 is video-only; all audio capabilities are deferred.
 - [x] Notification scope: excluded from the core Version 1 gate and introduced with person/vehicle detection.

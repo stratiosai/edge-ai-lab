@@ -99,4 +99,10 @@ projects/private-ring-camera/scripts/monitor_pi_soak.sh \
 
 The Pi capture, live relay, and archive uploader run as enabled user `systemd` services. Their one-time activation requires `loginctl enable-linger stratiosai`; without lingering, user services stop when the last SSH session ends and can corrupt the active recording segment. The activation script `pi/activate_user_services.sh` performs and verifies that prerequisite before replacing the temporary detached test processes. Before enabling or changing either setup, confirm that the camera faces the agreed controlled indoor test area and excludes bedrooms, bathrooms, screens, private paperwork, and non-consenting people.
 
-The deployment uses a device-only local TLS certificate: the Pi trusts the local CA for uploads, and each household phone must trust that CA before its browser can use the secure-cookie application. No port forwarding or public exposure is used. The reproducible service templates are under [infra](infra); credentials, generated certificates, media, and launchd copies remain outside Git.
+The Pi-to-Mac upload still uses the device-only local TLS certificate and local CA. For household viewing, the Mac's Tailscale Serve endpoint supplies a valid tailnet HTTPS certificate:
+
+```text
+https://tindols-macbook-pro.tail133ca1.ts.net/
+```
+
+Install Tailscale on each phone or laptop, sign in to the same tailnet, and open that URL; no local-CA installation is needed for the viewer. Tailscale Funnel must remain disabled, and no router port forwarding is used. The reproducible service templates are under [infra](infra); credentials, generated certificates, media, and launchd copies remain outside Git.

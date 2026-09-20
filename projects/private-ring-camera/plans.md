@@ -28,6 +28,7 @@ This initiative builds a private, local-first camera system using the existing R
 - [x] Version 1 has one administrator account; the data model must permit separate household accounts later.
 - [x] Store the Mac archive outside Git and iCloud at `~/Library/Application Support/StratiosAI/edge-ai-camera/archive/` by default; allow a configurable external-storage path later.
 - [x] Version 1 is video-only; microphone capture, listening, audio recording, and two-way talk are deferred.
+- [x] Prove Version 1 indoors against a controlled test area before aiming through a window or deploying toward a street or driveway.
 - [x] Person and vehicle detection begin after the Version 1 media path works end to end.
 
 ## Definition of Version 1 success
@@ -129,6 +130,7 @@ Create these implementation folders only as their milestone begins; do not add e
 - [ ] Capture a real still image.
 - [ ] Record and play a short real video.
 - [ ] Record camera model, port, cable orientation, resolution, and stable frame rates.
+- [ ] Aim the camera only at the agreed indoor test area during Version 1 development.
 
 **Gate:** a documented command repeatedly captures valid media after a reboot.
 
@@ -244,7 +246,8 @@ Record these for each milestone on the real Pi:
 - [x] Mac archive: private, outside Git and iCloud, defaulting to `~/Library/Application Support/StratiosAI/edge-ai-camera/archive/`; path configurable later.
 - [x] Mac power behavior: display sleep allowed; system remains awake while plugged in and archiving.
 - [x] Recording mode: continuous short segments with motion markers on the timeline.
-- [ ] Which camera zones are allowed and which must be masked.
+- [ ] Define the exact allowed indoor field of view and any privacy masks before continuous recording begins.
+- [x] Placement sequence: controlled indoor test area first; window, driveway, or outdoor deployment only after Version 1 acceptance.
 - [x] Audio boundary: Version 1 is video-only; all audio capabilities are deferred.
 - [ ] Notification rules and quiet hours.
 - [ ] VPN choice and account recovery policy.

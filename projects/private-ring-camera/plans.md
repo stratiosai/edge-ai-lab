@@ -31,6 +31,7 @@ This initiative builds a private, local-first camera system using the existing R
 - [x] Administrator sessions expire after seven days by default and support manual logout plus a `log out all devices` action.
 - [x] Version 1 password recovery requires a local reset command on the Mac; no email or cloud recovery service is used.
 - [x] Push notifications are excluded from the core Version 1 gate and begin with person/vehicle detection; V1 shows health in the web app.
+- [x] The administrator can manually delete selected recording segments before expiry; deletion requires confirmation and verified removal of media and timeline metadata.
 - [x] Prove Version 1 indoors against a controlled test area before aiming through a window or deploying toward a street or driveway.
 - [x] The first continuous test scene is a controlled workspace or unused corner that excludes bedrooms, bathrooms, screens, private paperwork, and non-consenting people.
 - [x] Person and vehicle detection begin after the Version 1 media path works end to end.
@@ -44,6 +45,7 @@ Version 1 is complete only when all of these are demonstrated from a real phone 
 - [ ] See camera, Pi, network, and storage health.
 - [ ] Browse a timeline covering the available portion of the last 24 hours.
 - [ ] Play a selected recording segment.
+- [ ] Manually delete a selected segment and verify its media and timeline metadata are gone.
 - [ ] Confirm recordings expire automatically after 24 hours.
 - [ ] Reboot the Pi and recover without manually restarting the application.
 - [ ] Disconnect the Mac temporarily, continue buffering on the Pi, then reconcile after reconnection.
@@ -168,6 +170,7 @@ Create these implementation folders only as their milestone begins; do not add e
 - [ ] Index segment start/end times and availability.
 - [ ] Build a timeline and playback control in the PWA.
 - [ ] Delete expired recordings automatically after 24 hours.
+- [ ] Support confirmed administrator deletion of selected segments before expiry and verify removal from storage and the timeline index.
 - [ ] Add disk high-water protection so retention failure cannot fill the Mac.
 - [ ] Provide explicit clip export before expiry.
 - [ ] Test time zones, restart recovery, partial files, and clock drift.

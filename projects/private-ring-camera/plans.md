@@ -176,7 +176,7 @@ Create these implementation folders only as their milestone begins; do not add e
 - [x] Delete expired recordings automatically after 24 hours (enforced at service start and every 15 minutes; configurable for future testing).
 - [ ] Support confirmed administrator deletion of selected segments before expiry and verify removal from storage and the timeline index.
 - [x] Add disk high-water protection so retention failure cannot fill the Mac.
-- [ ] Provide explicit selected-time-range export before expiry without automatic Photos or cloud copying.
+- [x] Provide explicit selected-time-range export before expiry without automatic Photos or cloud copying.
 - [ ] Test time zones, restart recovery, partial files, and clock drift.
 
 **Gate:** a phone can play a chosen time from the last 24 hours and expired content is verifiably removed.

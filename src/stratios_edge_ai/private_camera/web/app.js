@@ -1,6 +1,12 @@
 let csrfToken = null;
 let allSegments = [];
 
+function toLocalInputValue(epochSeconds) {
+  const date = new Date(epochSeconds * 1000);
+  const offset = date.getTimezoneOffset() * 60000;
+  return new Date(date.getTime() - offset).toISOString().slice(0, 16);
+}
+
 async function api(path, options = {}) {
   const headers = {...(options.headers || {})};
   if (csrfToken && !["GET", "HEAD"].includes((options.method || "GET").toUpperCase())) {
@@ -63,6 +69,12 @@ async function loadTimeline() {
   if (!response.ok) return;
   const {segments} = await response.json();
   allSegments = segments;
+  if (segments.length) {
+    const starts = segments.map(segment => segment.started_at);
+    const ends = segments.map(segment => segment.ended_at);
+    document.querySelector("#export-start").value = toLocalInputValue(Math.min(...starts));
+    document.querySelector("#export-end").value = toLocalInputValue(Math.max(...ends));
+  }
   populateScrubber();
   document.querySelector("#recordings-summary").textContent = `${segments.length} recording${segments.length === 1 ? "" : "s"} available locally`;
   const timeline = document.querySelector("#timeline");
@@ -179,6 +191,16 @@ document.querySelector("#recording-day").addEventListener("change", () => { docu
 document.querySelector("#recording-slider").addEventListener("input", () => stepScrubber(0));
 document.querySelector("#scrubber-previous").addEventListener("click", () => stepScrubber(-1));
 document.querySelector("#scrubber-next").addEventListener("click", () => stepScrubber(1));
+document.querySelector("#range-export").addEventListener("submit", event => {
+  event.preventDefault();
+  const start = new Date(document.querySelector("#export-start").value).getTime() / 1000;
+  const end = new Date(document.querySelector("#export-end").value).getTime() / 1000;
+  if (!Number.isFinite(start) || !Number.isFinite(end) || start >= end) {
+    alert("Choose a valid start and end time.");
+    return;
+  }
+  window.location.assign(`/api/segments/export?since=${Math.floor(start)}&until=${Math.ceil(end)}`);
+});
 
 (async () => {
   const response = await api("/api/session");

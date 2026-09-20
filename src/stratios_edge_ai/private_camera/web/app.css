@@ -26,6 +26,7 @@ button:hover { background:#007bb9; } button.secondary { background:#f8fafb; colo
 .view-tabs { display:flex; gap:8px; border-bottom:1px solid #e5eaed; margin:18px 0 14px; }
 button.view-tab { border-radius:9px 9px 0 0; background:transparent; color:#68727a; box-shadow:none; padding:10px 14px; }
 button.view-tab.active { background:#e7f5fc; color:#0078b9; }
+.range-export { display:grid; grid-template-columns:1fr minmax(150px,.7fr) minmax(150px,.7fr) auto; align-items:end; gap:12px; padding:13px; margin:0 0 14px; border:1px solid #dce6eb; border-radius:12px; background:#f6fbfe; }.range-export p { margin:4px 0 0; font-size:.78rem; }.range-export label { margin:0; font-size:.75rem; font-weight:800; }.range-export input { padding:8px; font-size:.86rem; }
 .scrubber-player { background:#101112; border-radius:16px; color:#f8fafb; padding:14px; box-shadow:inset 0 0 0 1px #25282b; }
 .scrubber-topbar { display:grid; grid-template-columns:1fr auto 1fr; align-items:center; min-height:42px; margin-bottom:12px; }
 .recording-badge,.camera-label { color:#b9c0c7; font-size:.72rem; font-weight:800; letter-spacing:.04em; text-transform:uppercase; }.camera-label { text-align:right; }
@@ -39,4 +40,4 @@ button.view-tab.active { background:#e7f5fc; color:#0078b9; }
 .segment { display:grid; grid-template-columns:1fr auto; gap:12px; padding:12px; border-radius:12px; background:#f8fafb; border:1px solid #edf0f1; }
 .segment-actions { display:flex; gap:8px; flex-wrap:wrap; }.segment-actions a,.segment-actions button { font-size:.82rem; padding:8px 10px; }
 .segment-actions a { color:#0078b9; align-self:center; font-weight:700; }
-@media (max-width:700px) { .status-grid { grid-template-columns:1fr; } main { padding-top:18px; } header { align-items:flex-start; } .header-actions { justify-content:flex-start; } .scrubber-player { padding:10px; }.scrubber-topbar { grid-template-columns:1fr auto; }.camera-label { display:none; }.scrubber-footer { align-items:flex-start; flex-direction:column; gap:4px; } }
+@media (max-width:700px) { .status-grid { grid-template-columns:1fr; } main { padding-top:18px; } header { align-items:flex-start; } .header-actions { justify-content:flex-start; } .range-export { grid-template-columns:1fr; }.scrubber-player { padding:10px; }.scrubber-topbar { grid-template-columns:1fr auto; }.camera-label { display:none; }.scrubber-footer { align-items:flex-start; flex-direction:column; gap:4px; } }

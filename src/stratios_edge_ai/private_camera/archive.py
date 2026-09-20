@@ -163,6 +163,24 @@ class Archive:
             ).fetchall()
         return [dict(row) for row in rows]
 
+    def export_segments(self, since: int, until: int, max_bytes: int) -> list[tuple[Path, dict[str, int | str]]]:
+        if since >= until:
+            raise ValueError("export start must be before export end")
+        selections: list[tuple[Path, dict[str, int | str]]] = []
+        total = 0
+        for metadata in reversed(self.list_segments(since, until)):
+            resolved = self.resolve(str(metadata["id"]))
+            if resolved is None or not resolved[0].is_file():
+                continue
+            path, resolved_metadata = resolved
+            total += int(resolved_metadata["size_bytes"])
+            if total > max_bytes:
+                raise ArchiveFullError("requested export exceeds the configured size limit")
+            selections.append((path, resolved_metadata))
+        if not selections:
+            raise FileNotFoundError("no recordings overlap that time range")
+        return selections
+
     def resolve(self, segment_id: str) -> tuple[Path, dict[str, int | str]] | None:
         with self.database.connect() as connection:
             row = connection.execute(

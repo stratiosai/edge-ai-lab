@@ -25,6 +25,7 @@ class CameraServerConfig:
     pi_live_ca_file: Path | None = None
     ingest_token: str | None = None
     max_archive_bytes: int = 64 * 1024 * 1024 * 1024
+    max_export_bytes: int = 4 * 1024 * 1024 * 1024
 
     @property
     def archive_dir(self) -> Path:
@@ -33,6 +34,10 @@ class CameraServerConfig:
     @property
     def database_path(self) -> Path:
         return self.data_dir / "camera.sqlite3"
+
+    @property
+    def export_dir(self) -> Path:
+        return self.data_dir / "exports"
 
     @classmethod
     def from_env(cls) -> CameraServerConfig:
@@ -69,12 +74,17 @@ class CameraServerConfig:
             max_archive_bytes=int(
                 os.environ.get("EDGE_CAMERA_MAX_ARCHIVE_BYTES", str(64 * 1024**3))
             ),
+            max_export_bytes=int(
+                os.environ.get("EDGE_CAMERA_MAX_EXPORT_BYTES", str(4 * 1024**3))
+            ),
         )
 
     def prepare(self) -> None:
         self.archive_dir.mkdir(parents=True, exist_ok=True, mode=0o700)
+        self.export_dir.mkdir(parents=True, exist_ok=True, mode=0o700)
         try:
             self.data_dir.chmod(0o700)
             self.archive_dir.chmod(0o700)
+            self.export_dir.chmod(0o700)
         except OSError:
             pass

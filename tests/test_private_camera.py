@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import hashlib
 import time
+import zipfile
+from io import BytesIO
 from pathlib import Path
 
 from fastapi.testclient import TestClient
@@ -100,6 +102,24 @@ def test_ingest_timeline_media_export_and_verified_delete(tmp_path: Path) -> Non
     assert client.get(f"/api/segments/{segment_id}/media").status_code == 404
     assert client.get("/api/segments").json()["segments"] == []
     assert list((tmp_path / "private-camera" / "archive").iterdir()) == []
+
+
+def test_authenticated_range_export_is_local_zip(tmp_path: Path) -> None:
+    client = make_client(tmp_path)
+    now = int(time.time())
+    first_id = ingest(client, started_at=now - 180, ended_at=now - 120, body=b"first")
+    second_id = ingest(client, started_at=now - 120, ended_at=now - 60, body=b"second")
+    assert client.get(f"/api/segments/export?since={now - 200}&until={now}").status_code == 401
+    login(client)
+    exported = client.get(f"/api/segments/export?since={now - 200}&until={now}")
+    assert exported.status_code == 200
+    assert exported.headers["content-type"].startswith("application/zip")
+    with zipfile.ZipFile(BytesIO(exported.content)) as bundle:
+        names = bundle.namelist()
+        assert "manifest.json" in names
+        manifest = bundle.read("manifest.json").decode()
+        assert first_id in manifest and second_id in manifest
+        assert len([name for name in names if name.endswith(".mp4")]) == 2
 
 
 def test_segment_ingest_is_idempotent_and_verifies_digest(tmp_path: Path) -> None:

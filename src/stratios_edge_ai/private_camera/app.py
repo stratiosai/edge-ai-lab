@@ -3,7 +3,10 @@
 import asyncio
 import hmac
 import json
+import os
+import tempfile
 import time
+import zipfile
 from contextlib import asynccontextmanager, suppress
 from pathlib import Path
 from typing import Annotated
@@ -12,6 +15,7 @@ import httpx
 from fastapi import Depends, FastAPI, Header, HTTPException, Request, Response, status
 from fastapi.responses import FileResponse, HTMLResponse, StreamingResponse
 from pydantic import BaseModel
+from starlette.background import BackgroundTask
 
 from .archive import Archive, ArchiveFullError
 from .config import CameraServerConfig
@@ -301,6 +305,42 @@ def create_app(config: CameraServerConfig | None = None) -> FastAPI:
         if thumbnail_path is None or not thumbnail_path.is_file():
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
         return FileResponse(thumbnail_path, media_type="image/jpeg")
+
+    @app.get("/api/segments/export")
+    def export_range(
+        since: int,
+        until: int,
+        _user: Annotated[dict[str, int | str], Depends(session_user)],
+    ) -> FileResponse:
+        try:
+            selections = archive.export_segments(since, until, config.max_export_bytes)
+        except ArchiveFullError as exc:
+            raise HTTPException(status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE, detail=str(exc)) from exc
+        except (FileNotFoundError, ValueError) as exc:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
+        descriptor, temporary_name = tempfile.mkstemp(
+            prefix="edge-camera-export-", suffix=".zip", dir=config.export_dir
+        )
+        os.close(descriptor)
+        temporary_path = Path(temporary_name)
+        try:
+            with zipfile.ZipFile(temporary_path, "w", compression=zipfile.ZIP_STORED) as bundle:
+                manifest: list[dict[str, int | str]] = []
+                for media_path, metadata in selections:
+                    archive_name = f"recordings/{metadata['started_at']}-{metadata['id']}.mp4"
+                    bundle.write(media_path, archive_name)
+                    manifest.append({key: metadata[key] for key in ("id", "started_at", "ended_at", "sha256")})
+                bundle.writestr("manifest.json", json.dumps(manifest, indent=2))
+            temporary_path.chmod(0o600)
+        except Exception:
+            temporary_path.unlink(missing_ok=True)
+            raise
+        return FileResponse(
+            temporary_path,
+            media_type="application/zip",
+            filename=f"edge-camera-{since}-{until}.zip",
+            background=BackgroundTask(temporary_path.unlink, missing_ok=True),
+        )
 
     @app.get("/api/segments/{segment_id}/export")
     def export(

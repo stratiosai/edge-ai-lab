@@ -45,6 +45,12 @@
             <button id="list-view-button" class="view-tab active" type="button" role="tab" aria-selected="true">List</button>
             <button id="scrubber-view-button" class="view-tab" type="button" role="tab" aria-selected="false">Day scrubber</button>
           </div>
+          <form id="range-export" class="range-export">
+            <div><strong>Export a time range</strong><p class="muted">Creates a local ZIP download. Nothing is copied to Photos or cloud storage.</p></div>
+            <label>Start<input id="export-start" type="datetime-local" required></label>
+            <label>End<input id="export-end" type="datetime-local" required></label>
+            <button type="submit" class="secondary">Export ZIP</button>
+          </form>
           <div id="list-view" role="tabpanel"><div id="timeline" class="timeline"></div></div>
           <div id="scrubber-view" role="tabpanel" hidden>
             <div class="scrubber-player">

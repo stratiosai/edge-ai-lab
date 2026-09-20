@@ -218,7 +218,7 @@ Create these implementation folders only as their milestone begins; do not add e
 - [ ] Add minimal notification metadata with no private thumbnail by default.
 - [ ] Link notifications to the authenticated application.
 - [x] Install and sign in to Tailscale on the Mac and Pi; verify both devices receive tailnet addresses and the three camera services remain active over the Pi's Tailscale address (`100.94.184.109`) on 2026-09-20. No router port was opened.
-- [x] Enable Tailscale HTTPS certificates and configure private Tailscale Serve on the Mac: `https://tindols-macbook-pro.tail133ca1.ts.net/` proxies to the local camera app over `https+insecure://127.0.0.1:8443`; Tailscale Funnel was explicitly left disabled. Pi-side HTTPS verification returned HTTP 200 on 2026-09-20.
+- [x] Enable Tailscale HTTPS certificates and configure private Tailscale Serve on the Mac: `https://tindols-macbook-pro.tail133ca1.ts.net/` proxies to the local camera app over `https+insecure://127.0.0.1:8443`; Tailscale Funnel was explicitly left disabled. Pi-side HTTPS verification returned HTTP 200, and a clean browser rendered the protected camera sign-in page over the tailnet URL on 2026-09-20.
 - [ ] Verify phone access away from home over Tailscale. (The Mac and Pi private path is proven; phone/off-LAN acceptance remains.)
 - [ ] Confirm no camera, API, database, or media port is publicly reachable.
 - [ ] Document credential rotation, device loss, and account revocation.

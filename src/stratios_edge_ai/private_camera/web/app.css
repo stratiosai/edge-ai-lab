@@ -21,7 +21,6 @@ button:hover { background:#007bb9; } button.secondary { background:#f8fafb; colo
 .live-card { margin-bottom:18px; }
 .video-shell { aspect-ratio:16/9; background:#091015; border-radius:12px; overflow:hidden; display:grid; place-items:center; }
 .video-shell img { display:block; width:100%; height:100%; object-fit:contain; }
-.latency-link { display:inline-block; margin-top:12px; color:#177caf; font-size:.85rem; font-weight:800; text-decoration:none; }.latency-link:hover { color:#0078b9; text-decoration:underline; }
 .timeline { display:grid; gap:10px; }
 .recordings-card { margin-top:18px; }
 .view-tabs { display:flex; gap:8px; border-bottom:1px solid #e5eaed; margin:18px 0 14px; }

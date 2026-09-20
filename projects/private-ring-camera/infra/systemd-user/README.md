@@ -17,3 +17,9 @@ persistence after logout and Pi reboot, an administrator must run
 this file; each unit references the private token and certificate files by path.
 The services write private operational logs to `~/edge-camera-logs/`; no media
 frames or tokens are logged.
+
+After the repo has been staged at `~/edge-ai-lab`, use
+`projects/private-ring-camera/pi/activate_user_services.sh` for the one-time
+switch. It first verifies lingering is enabled, then stops the detached test
+processes and starts the durable services in the safe live → capture → uploader
+order.

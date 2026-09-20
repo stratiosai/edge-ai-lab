@@ -5,7 +5,7 @@ This initiative builds a private, local-first camera system using the existing R
 ## Initiative status
 
 - **Roadmap capability:** `P040 Private Ring-style camera`
-- **Current phase:** hardware and camera bring-up
+- **Current phase:** Phase 0 camera media proven; Phase 1 encoder and service implementation in progress
 - **Target network:** home LAN first; home VPN later
 - **Deployment principle:** no router port forwarding and no publicly exposed camera service
 - **Hardware upgrade policy:** prove a measured limit before buying a HAT or accelerator
@@ -134,10 +134,11 @@ Create these implementation folders only as their milestone begins; do not add e
 - [x] Identify the Pi as a Raspberry Pi 5 with 4 GB RAM.
 - [x] Install Raspberry Pi OS Lite 64-bit and enable SSH key authentication.
 - [x] Connect the Pi to the home Wi-Fi and verify SSH over Wi-Fi.
-- [ ] Detect the attached camera with `rpicam-hello --list-cameras`.
-- [ ] Capture a real still image.
-- [ ] Record and play a short real video.
-- [ ] Record camera model, port, cable orientation, resolution, and stable frame rates.
+- [x] Detect the attached camera with `rpicam-hello --list-cameras`.
+- [x] Capture a real still image.
+- [x] Record and decode a short real video.
+- [x] Record camera model, port, resolution, frame rate, temperature, and throttling state.
+- [ ] Confirm the physical ribbon-cable orientation during the next hands-on inspection.
 - [ ] Aim the camera only at the agreed indoor test area during Version 1 development.
 
 **Gate:** a documented command repeatedly captures valid media after a reboot.

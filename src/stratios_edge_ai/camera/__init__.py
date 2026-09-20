@@ -1,2 +1,1 @@
 """Camera capture interfaces."""
-

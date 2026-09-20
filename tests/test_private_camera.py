@@ -1,0 +1,144 @@
+from __future__ import annotations
+
+import hashlib
+import time
+from pathlib import Path
+
+from fastapi.testclient import TestClient
+
+from stratios_edge_ai.private_camera.admin import set_admin
+from stratios_edge_ai.private_camera.app import create_app
+from stratios_edge_ai.private_camera.config import CameraServerConfig
+
+PASSWORD = "correct horse camera battery"
+INGEST_TOKEN = "test-ingest-token"
+
+
+def make_client(tmp_path: Path, *, max_archive_bytes: int = 1024 * 1024) -> TestClient:
+    config = CameraServerConfig(
+        data_dir=tmp_path / "private-camera",
+        secure_cookies=False,
+        ingest_token=INGEST_TOKEN,
+        max_archive_bytes=max_archive_bytes,
+    )
+    app = create_app(config)
+    set_admin(app.state.database, "admin", PASSWORD)
+    return TestClient(app)
+
+
+def login(client: TestClient) -> str:
+    response = client.post("/api/login", json={"username": "admin", "password": PASSWORD})
+    assert response.status_code == 200
+    return response.json()["csrf_token"]
+
+
+def ingest(client: TestClient, *, started_at: int, ended_at: int, body: bytes = b"video") -> str:
+    response = client.post(
+        "/api/ingest/segment",
+        content=body,
+        headers={
+            "X-Ingest-Token": INGEST_TOKEN,
+            "X-Segment-Started-At": str(started_at),
+            "X-Segment-Ended-At": str(ended_at),
+            "X-Segment-Extension": ".mp4",
+        },
+    )
+    assert response.status_code == 200
+    return response.json()["segment_id"]
+
+
+def test_protected_routes_require_authentication(tmp_path: Path) -> None:
+    client = make_client(tmp_path)
+    assert client.get("/api/session").status_code == 401
+    assert client.get("/api/health").status_code == 401
+    assert client.get("/api/segments").status_code == 401
+    assert client.get("/api/live").status_code == 401
+
+
+def test_login_session_logout_and_security_headers(tmp_path: Path) -> None:
+    client = make_client(tmp_path)
+    assert (
+        client.post(
+            "/api/login", json={"username": "admin", "password": "incorrect password"}
+        ).status_code
+        == 401
+    )
+
+    csrf = login(client)
+    session = client.get("/api/session")
+    assert session.status_code == 200
+    assert session.json()["username"] == "admin"
+    assert session.json()["csrf_token"] == csrf
+    assert session.headers["x-frame-options"] == "DENY"
+    assert session.headers["cache-control"] == "no-store"
+
+    assert client.post("/api/logout").status_code == 403
+    assert client.post("/api/logout", headers={"X-CSRF-Token": csrf}).status_code == 200
+    assert client.get("/api/session").status_code == 401
+
+
+def test_ingest_timeline_media_export_and_verified_delete(tmp_path: Path) -> None:
+    client = make_client(tmp_path)
+    csrf = login(client)
+    now = int(time.time())
+    body = b"synthetic-mp4-test-payload"
+    segment_id = ingest(client, started_at=now - 60, ended_at=now, body=body)
+
+    timeline = client.get("/api/segments").json()["segments"]
+    assert [item["id"] for item in timeline] == [segment_id]
+    assert timeline[0]["sha256"] == hashlib.sha256(body).hexdigest()
+    assert client.get(f"/api/segments/{segment_id}/media").content == body
+    export = client.get(f"/api/segments/{segment_id}/export")
+    assert export.content == body
+    assert "attachment" in export.headers["content-disposition"]
+
+    assert client.delete(f"/api/segments/{segment_id}").status_code == 403
+    deleted = client.delete(f"/api/segments/{segment_id}", headers={"X-CSRF-Token": csrf})
+    assert deleted.status_code == 200
+    assert client.get(f"/api/segments/{segment_id}/media").status_code == 404
+    assert client.get("/api/segments").json()["segments"] == []
+    assert list((tmp_path / "private-camera" / "archive").iterdir()) == []
+
+
+def test_retention_removes_expired_media_and_index(tmp_path: Path) -> None:
+    client = make_client(tmp_path)
+    csrf = login(client)
+    now = int(time.time())
+    expired_id = ingest(client, started_at=now - 90000, ended_at=now - 89900)
+    current_id = ingest(client, started_at=now - 120, ended_at=now - 60)
+
+    result = client.post("/api/retention/run", headers={"X-CSRF-Token": csrf})
+    assert result.status_code == 200
+    assert result.json()["expired_segment_ids"] == [expired_id]
+    assert client.get(f"/api/segments/{expired_id}/media").status_code == 404
+    assert client.get(f"/api/segments/{current_id}/media").status_code == 200
+
+
+def test_ingest_auth_validation_and_storage_high_water(tmp_path: Path) -> None:
+    client = make_client(tmp_path, max_archive_bytes=8)
+    now = int(time.time())
+    headers = {
+        "X-Segment-Started-At": str(now - 1),
+        "X-Segment-Ended-At": str(now),
+        "X-Segment-Extension": ".mp4",
+    }
+    assert client.post("/api/ingest/segment", content=b"1234", headers=headers).status_code == 401
+    headers["X-Ingest-Token"] = INGEST_TOKEN
+    assert (
+        client.post("/api/ingest/segment", content=b"123456789", headers=headers).status_code == 507
+    )
+    headers["X-Segment-Extension"] = ".exe"
+    assert client.post("/api/ingest/segment", content=b"1", headers=headers).status_code == 422
+
+
+def test_logout_all_revokes_every_session(tmp_path: Path) -> None:
+    first = make_client(tmp_path)
+    csrf_first = login(first)
+    second = TestClient(first.app)
+    login(second)
+    assert second.get("/api/session").status_code == 200
+
+    response = first.post("/api/logout-all", headers={"X-CSRF-Token": csrf_first})
+    assert response.status_code == 200
+    assert first.get("/api/session").status_code == 401
+    assert second.get("/api/session").status_code == 401

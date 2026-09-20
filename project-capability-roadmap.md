@@ -74,7 +74,7 @@ Capability labels:
 - [ ] **P040 Private Ring-style camera `[A/B/E]`** — motion/person event, clips, local API, phone PWA, authentication, home VPN, retention, and network-loss recovery. Detailed initiative: [`projects/private-ring-camera/plans.md`](projects/private-ring-camera/plans.md).
   - [x] Initiative scope and Version 1 success definition agreed.
   - [x] Pi operating system, SSH, and independent home Wi-Fi established.
-  - [ ] Phase 0: camera detected and real still/video captured.
+  - [x] Phase 0: camera detected and real still/video captured.
   - [ ] Phase 1: reliable Pi streaming, recording, buffering, and health service.
   - [ ] Phase 2: authenticated phone/laptop web application.
   - [ ] Phase 3: Mac-hosted rolling 24-hour archive and playback timeline.

@@ -9,10 +9,21 @@ description = "Raspberry Pi edge AI experiments for vision, voice, and multimoda
 requires-python = ">=3.11"
 dependencies = []
 
+[project.scripts]
+edge-camera-server = "stratios_edge_ai.private_camera.cli:serve"
+edge-camera-admin = "stratios_edge_ai.private_camera.cli:admin"
+
 [project.optional-dependencies]
 dev = [
+  "httpx>=0.28",
   "pytest>=8",
   "ruff>=0.6",
+]
+private-camera = [
+  "argon2-cffi>=23.1",
+  "fastapi>=0.115",
+  "httpx>=0.28",
+  "uvicorn[standard]>=0.34",
 ]
 pi-camera = [
   "picamera2",
@@ -21,10 +32,12 @@ pi-camera = [
 [tool.setuptools.packages.find]
 where = ["src"]
 
+[tool.setuptools.package-data]
+"stratios_edge_ai.private_camera" = ["web/*.html", "web/*.css", "web/*.js"]
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 
 [tool.ruff]
 line-length = 100
 target-version = "py311"
-

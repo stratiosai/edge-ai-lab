@@ -22,7 +22,7 @@ def command_path(name: str) -> str:
 
 
 def main() -> None:
-    total, used, free = shutil.disk_usage(Path.cwd())
+    _total, _used, free = shutil.disk_usage(Path.cwd())
     print(f"system: {platform.system()} {platform.release()}")
     print(f"machine: {platform.machine()}")
     print(f"python: {platform.python_version()}")
@@ -46,4 +46,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-

@@ -9,6 +9,7 @@ build/
 dist/
 *.egg-info/
 
+# Private camera media, databases, secrets, and runtime state must never enter Git.
 data/*
 !data/.gitkeep
 !data/README.md
@@ -16,3 +17,11 @@ data/*
 models/*
 !models/.gitkeep
 
+projects/private-ring-camera/runtime/
+projects/private-ring-camera/**/*.sqlite3
+projects/private-ring-camera/**/*.mp4
+projects/private-ring-camera/**/*.m4s
+projects/private-ring-camera/**/*.h264
+projects/private-ring-camera/**/*.mjpeg
+projects/private-ring-camera/**/*.jpg
+projects/private-ring-camera/**/*.png

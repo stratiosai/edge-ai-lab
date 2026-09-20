@@ -24,6 +24,7 @@ This initiative builds a private, local-first camera system using the existing R
 - [x] Version 1 records continuously in short segments; motion creates timeline markers rather than deciding whether video exists.
 - [x] Record at 1080p, 15 FPS, H.264, approximately 2–3 Mbps; provide a separate 720p live view targeting less than two seconds of delay.
 - [x] The Mac display may sleep, but the plugged-in Mac remains awake while providing archive, API, and web services.
+- [x] The Pi outage buffer defaults to one hour with a 2 GB hard ceiling; both are configurable, and the oldest local segments are removed first.
 - [x] Person and vehicle detection begin after the Version 1 media path works end to end.
 
 ## Definition of Version 1 success
@@ -61,7 +62,7 @@ Phone/laptop PWA <---- authenticated API ---+
 
 - Capture the camera stream.
 - Produce a lower-resolution live stream and appropriately sized recording stream.
-- Maintain a bounded circular buffer during Mac or network interruption.
+- Maintain a one-hour circular buffer with a 2 GB hard ceiling during Mac or network interruption, removing the oldest local segments first.
 - Report camera, temperature, disk, stream, and connection health.
 - Later run motion filtering and lightweight person/vehicle detection.
 
@@ -133,7 +134,7 @@ Create these implementation folders only as their milestone begins; do not add e
 - [ ] Produce a 720p live-view stream suitable for a phone on the LAN with a target delay under two seconds.
 - [ ] Record 1080p at 15 FPS using H.264 at approximately 2–3 Mbps.
 - [ ] Segment recordings into small files so interruption does not corrupt a full day.
-- [ ] Add a size-bounded Pi circular buffer.
+- [ ] Add a configurable Pi circular buffer defaulting to one hour with a 2 GB hard ceiling.
 - [ ] Add health and performance telemetry without logging private frames.
 - [ ] Run capture under `systemd` with restart limits and useful logs.
 
@@ -234,7 +235,7 @@ Record these for each milestone on the real Pi:
 
 - [ ] Who receives accounts in Version 1: one administrator or multiple household users?
 - [x] Media profile: 1080p/15 FPS H.264 recording at approximately 2–3 Mbps; 720p live view targeting less than two seconds of delay.
-- [ ] Exact Pi buffer duration and storage limit.
+- [x] Pi outage buffer: configurable, defaulting to one hour with a 2 GB hard ceiling and oldest-first removal.
 - [ ] Exact Mac archive directory or external storage volume.
 - [x] Mac power behavior: display sleep allowed; system remains awake while plugged in and archiving.
 - [x] Recording mode: continuous short segments with motion markers on the timeline.

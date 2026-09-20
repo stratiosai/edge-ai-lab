@@ -25,6 +25,7 @@ This initiative builds a private, local-first camera system using the existing R
 - [x] Record at 1080p, 15 FPS, H.264, approximately 2–3 Mbps; provide a separate 720p live view targeting less than two seconds of delay.
 - [x] The Mac display may sleep, but the plugged-in Mac remains awake while providing archive, API, and web services.
 - [x] The Pi outage buffer defaults to one hour with a 2 GB hard ceiling; both are configurable, and the oldest local segments are removed first.
+- [x] Version 1 has one administrator account; the data model must permit separate household accounts later.
 - [x] Person and vehicle detection begin after the Version 1 media path works end to end.
 
 ## Definition of Version 1 success
@@ -233,7 +234,7 @@ Record these for each milestone on the real Pi:
 
 ## Remaining decisions for the grill-me interview
 
-- [ ] Who receives accounts in Version 1: one administrator or multiple household users?
+- [x] Account model: one Version 1 administrator, with a schema that supports multiple household accounts later.
 - [x] Media profile: 1080p/15 FPS H.264 recording at approximately 2–3 Mbps; 720p live view targeting less than two seconds of delay.
 - [x] Pi outage buffer: configurable, defaulting to one hour with a 2 GB hard ceiling and oldest-first removal.
 - [ ] Exact Mac archive directory or external storage volume.

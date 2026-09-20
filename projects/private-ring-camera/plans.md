@@ -169,7 +169,7 @@ Create these implementation folders only as their milestone begins; do not add e
 - [x] Expire sessions after seven days by default; implement manual logout and administrator revocation of all sessions.
 - [x] Provide a local Mac command that resets the administrator password and revokes existing sessions without printing credentials.
 - [x] Show live video, connection state, recording state, disk use, and camera health.
-- [ ] Do not expose Pi or Mac service ports through the home router. (2026-09-20 local baseline: Mac camera service listens on LAN port 8443; Pi listens on 8090 and SSH 22. Neither device has Tailscale, UPnP, or NAT-PMP mapping tooling installed. Router configuration and public reachability still require direct verification.)
+- [ ] Do not expose Pi or Mac service ports through the home router. (2026-09-20 local baseline: Mac camera service listens on LAN port 8443; Pi listens on 8090 and SSH 22. Neither device has Tailscale, UPnP, or NAT-PMP mapping tooling installed. The home gateway is reachable at `192.168.0.1` but redirects to a self-signed HTTPS dashboard; router configuration and public reachability therefore require an operator-accepted certificate warning and direct read-only verification.)
 
 **Gate:** an authorized phone can view live video, while an unauthenticated browser is denied.
 

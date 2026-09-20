@@ -31,12 +31,30 @@ async function loadHealth() {
   document.querySelector("#server-status").textContent = health.server;
   document.querySelector("#camera-status").textContent = health.camera?.camera || "Not connected";
   document.querySelector("#archive-size").textContent = `${(health.archive_bytes / 1073741824).toFixed(2)} GB`;
+  const detail = document.querySelector("#health-detail");
+  if (!health.camera) {
+    detail.textContent = "Waiting for the Pi to report camera health.";
+    return;
+  }
+  const reported = health.camera_updated_at ? new Date(health.camera_updated_at * 1000).toLocaleTimeString() : "unknown time";
+  const temperature = health.camera.temperature ? ` · ${health.camera.temperature}` : "";
+  const throttled = health.camera.throttled ? ` · ${health.camera.throttled}` : "";
+  detail.textContent = `Pi health updated ${reported}${temperature}${throttled}`;
 }
 
 async function deleteSegment(id) {
   if (!confirm("Permanently delete this local recording segment?")) return;
   const response = await api(`/api/segments/${id}`, {method: "DELETE"});
   if (response.ok) await loadTimeline();
+}
+
+async function logoutAllDevices() {
+  if (!confirm("Log out this administrator on every device?")) return;
+  const response = await api("/api/logout-all", {method: "POST"});
+  if (response.ok) {
+    csrfToken = null;
+    showLogin();
+  }
 }
 
 async function loadTimeline() {
@@ -71,6 +89,7 @@ document.querySelector("#login-form").addEventListener("submit", async event => 
   const session = await api("/api/session"); await showDashboard(await session.json());
 });
 document.querySelector("#logout").addEventListener("click", async () => { await api("/api/logout", {method:"POST"}); csrfToken = null; showLogin(); });
+document.querySelector("#logout-all").addEventListener("click", logoutAllDevices);
 document.querySelector("#refresh").addEventListener("click", () => Promise.all([loadHealth(), loadTimeline()]));
 
 (async () => {

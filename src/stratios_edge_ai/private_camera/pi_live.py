@@ -7,6 +7,7 @@ import hmac
 import logging
 import os
 import select
+import ssl
 import threading
 from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -111,17 +112,26 @@ def main() -> None:
     parser.add_argument("--token-file", type=Path, required=True)
     parser.add_argument("--host", default="0.0.0.0")
     parser.add_argument("--port", type=int, default=8090)
+    parser.add_argument("--tls-cert", type=Path)
+    parser.add_argument("--tls-key", type=Path)
     args = parser.parse_args()
     token = args.token_file.read_text(encoding="utf-8").strip()
     if not token:
         raise RuntimeError("live token file is empty")
     if not args.fifo.is_fifo():
         raise RuntimeError(f"live FIFO is missing: {args.fifo}")
+    if bool(args.tls_cert) != bool(args.tls_key):
+        raise RuntimeError("set both --tls-cert and --tls-key for HTTPS")
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
     frames = LatestJpeg(args.fifo)
     threading.Thread(target=frames.run, name="jpeg-reader", daemon=True).start()
     server = ThreadingHTTPServer((args.host, args.port), make_handler(frames, token))
-    LOG.info("serving token-protected live MJPEG on %s:%s", args.host, args.port)
+    if args.tls_cert and args.tls_key:
+        context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+        context.load_cert_chain(args.tls_cert, args.tls_key)
+        server.socket = context.wrap_socket(server.socket, server_side=True)
+    scheme = "https" if args.tls_cert else "http"
+    LOG.info("serving token-protected live MJPEG over %s on %s:%s", scheme, args.host, args.port)
     server.serve_forever()
 
 

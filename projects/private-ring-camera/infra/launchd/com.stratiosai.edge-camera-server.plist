@@ -14,8 +14,9 @@
     <key>EDGE_CAMERA_BIND_PORT</key><string>8443</string>
     <key>EDGE_CAMERA_SECURE_COOKIES</key><string>true</string>
     <key>EDGE_CAMERA_INGEST_TOKEN</key><string>__INGEST_TOKEN__</string>
-    <key>EDGE_CAMERA_PI_LIVE_URL</key><string>http://192.168.0.65:8090/live.mjpg</string>
+    <key>EDGE_CAMERA_PI_LIVE_URL</key><string>https://edge-ai-pi.local:8090/live.mjpg</string>
     <key>EDGE_CAMERA_PI_LIVE_TOKEN</key><string>__LIVE_TOKEN__</string>
+    <key>EDGE_CAMERA_PI_LIVE_CA_FILE</key><string>__CA_FILE__</string>
     <key>EDGE_CAMERA_TLS_CERT_FILE</key><string>__CERT_FILE__</string>
     <key>EDGE_CAMERA_TLS_KEY_FILE</key><string>__KEY_FILE__</string>
   </dict>

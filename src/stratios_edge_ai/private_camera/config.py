@@ -21,6 +21,7 @@ class CameraServerConfig:
     tls_key_file: Path | None = None
     pi_live_url: str | None = None
     pi_live_token: str | None = None
+    pi_live_ca_file: Path | None = None
     ingest_token: str | None = None
     max_archive_bytes: int = 64 * 1024 * 1024 * 1024
 
@@ -55,6 +56,11 @@ class CameraServerConfig:
             ),
             pi_live_url=os.environ.get("EDGE_CAMERA_PI_LIVE_URL") or None,
             pi_live_token=os.environ.get("EDGE_CAMERA_PI_LIVE_TOKEN") or None,
+            pi_live_ca_file=(
+                Path(os.environ["EDGE_CAMERA_PI_LIVE_CA_FILE"]).expanduser()
+                if os.environ.get("EDGE_CAMERA_PI_LIVE_CA_FILE")
+                else None
+            ),
             ingest_token=os.environ.get("EDGE_CAMERA_INGEST_TOKEN") or None,
             max_archive_bytes=int(
                 os.environ.get("EDGE_CAMERA_MAX_ARCHIVE_BYTES", str(64 * 1024**3))

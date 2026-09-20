@@ -304,7 +304,10 @@ def create_app(config: CameraServerConfig | None = None) -> FastAPI:
 
         async def stream():
             async with (
-                httpx.AsyncClient(timeout=None) as client,
+                httpx.AsyncClient(
+                    timeout=None,
+                    verify=str(config.pi_live_ca_file) if config.pi_live_ca_file else True,
+                ) as client,
                 client.stream("GET", config.pi_live_url, headers={"X-Live-Token": config.pi_live_token}) as upstream,
             ):
                 upstream.raise_for_status()

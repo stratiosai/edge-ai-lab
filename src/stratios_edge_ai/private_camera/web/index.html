@@ -24,13 +24,17 @@
       <section id="dashboard" hidden>
         <header>
           <div><p class="eyebrow">EDGE-AI-PI</p><h1>Camera overview</h1></div>
-          <button id="logout" class="secondary">Log out</button>
+          <div class="header-actions">
+            <button id="logout-all" class="secondary">Log out all devices</button>
+            <button id="logout" class="secondary">Log out</button>
+          </div>
         </header>
         <div class="status-grid">
           <article class="card"><span>Server</span><strong id="server-status">Checking…</strong></article>
           <article class="card"><span>Camera</span><strong id="camera-status">Checking…</strong></article>
           <article class="card"><span>Archive</span><strong id="archive-size">Checking…</strong></article>
         </div>
+        <p id="health-detail" class="muted health-detail" aria-live="polite"></p>
         <article class="card live-card">
           <div class="section-title"><h2>Live</h2><span>720p target</span></div>
           <div class="video-shell"><img id="live-view" alt="Authenticated live camera view"></div>

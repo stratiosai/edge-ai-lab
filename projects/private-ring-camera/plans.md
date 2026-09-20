@@ -1,0 +1,243 @@
+# Private Ring-Style Raspberry Pi Camera Plan
+
+This initiative builds a private, local-first camera system using the existing Raspberry Pi 5, Raspberry Pi camera, home Wi-Fi, and Mac. The first complete milestone is deliberately focused: securely sign in from a phone or laptop, watch live video, and review a rolling 24-hour recording history. Person and vehicle detection come immediately afterward.
+
+## Initiative status
+
+- **Roadmap capability:** `P040 Private Ring-style camera`
+- **Current phase:** hardware and camera bring-up
+- **Target network:** home LAN first; home VPN later
+- **Deployment principle:** no router port forwarding and no publicly exposed camera service
+- **Hardware upgrade policy:** prove a measured limit before buying a HAT or accelerator
+
+## Decisions locked so far
+
+- [x] Raspberry Pi 5 is the camera and edge-processing device.
+- [x] The Pi connects independently to the home Wi-Fi.
+- [x] Ethernet may remain available as a recovery and administration path.
+- [x] A phone-friendly web app is the first client; no app-store application is required.
+- [x] Version 1 includes authentication, live video, recording, and playback.
+- [x] The Mac is the authoritative store for a rolling 24-hour archive.
+- [x] The Pi keeps a short circular buffer so temporary Mac or network loss does not immediately lose video.
+- [x] Initial access is restricted to the home LAN.
+- [x] Later remote access uses a home VPN, not camera port forwarding.
+- [x] Person and vehicle detection begin after the Version 1 media path works end to end.
+
+## Definition of Version 1 success
+
+Version 1 is complete only when all of these are demonstrated from a real phone and laptop:
+
+- [ ] Sign in with an authorized household account.
+- [ ] Open a live camera view with acceptable delay and stable playback.
+- [ ] See camera, Pi, network, and storage health.
+- [ ] Browse a timeline covering the available portion of the last 24 hours.
+- [ ] Play a selected recording segment.
+- [ ] Confirm recordings expire automatically after 24 hours.
+- [ ] Reboot the Pi and recover without manually restarting the application.
+- [ ] Disconnect the Mac temporarily, continue buffering on the Pi, then reconcile after reconnection.
+- [ ] Confirm an unauthenticated device cannot view the stream or recordings.
+
+Object detection and notifications are intentionally not required to pass this first gate.
+
+## Proposed system boundary
+
+```text
+Raspberry Pi Camera
+        |
+        v
+Pi capture service ----> Pi circular outage buffer
+        |
+        +----> authenticated low-latency live stream
+        |
+        +----> recording segments ----> Mac rolling 24-hour archive
+                                           |
+Phone/laptop PWA <---- authenticated API ---+
+```
+
+### Raspberry Pi responsibilities
+
+- Capture the camera stream.
+- Produce a lower-resolution live stream and appropriately sized recording stream.
+- Maintain a bounded circular buffer during Mac or network interruption.
+- Report camera, temperature, disk, stream, and connection health.
+- Later run motion filtering and lightweight person/vehicle detection.
+
+### Mac responsibilities
+
+- Store the authoritative rolling 24-hour media archive.
+- Run the application API, authentication, timeline index, and web UI initially.
+- Enforce retention and expose only authenticated media routes.
+- Receive buffered segments when the Pi reconnects.
+
+### Phone and laptop responsibilities
+
+- Use the responsive progressive web application.
+- Sign in before accessing live video, recordings, or system status.
+- Stay on the home LAN for Version 1; use the approved VPN in a later milestone.
+
+## Repository structure for this initiative
+
+```text
+projects/private-ring-camera/
+├── plans.md                    # Decisions, phases, gates, and initiative checklist
+├── README.md                   # Setup and operator instructions once implementation starts
+├── pi/
+│   ├── capture/                # Camera capture, stream generation, and segment writing
+│   ├── buffer/                 # Bounded outage buffer and reconciliation
+│   └── health/                 # Device and camera health reporting
+├── server/
+│   ├── api/                    # Authentication, live/events/timeline/media endpoints
+│   ├── retention/              # Rolling deletion and storage safeguards
+│   └── index/                  # Recording/event metadata
+├── web/                        # Responsive phone/laptop PWA
+├── configs/                    # Safe example configuration; never credentials
+├── containers/                 # ARM64 Pi and Mac/server container definitions
+├── infra/
+│   ├── systemd/                # Pi service units
+│   ├── compose/                # Mac/server composition
+│   └── vpn/                    # Later VPN guidance; never keys
+├── tests/
+│   ├── replay/                 # Recorded and synthetic camera inputs
+│   ├── integration/            # Pi/server/API/media path tests
+│   └── acceptance/             # Phone, retention, outage, restart, and access tests
+└── docs/
+    ├── architecture.md
+    ├── threat-model.md
+    ├── privacy.md
+    └── runbook.md
+```
+
+Create these implementation folders only as their milestone begins; do not add empty scaffolding merely to make the tree look complete.
+
+## Sequential delivery checklist
+
+### Phase 0 — prove the hardware
+
+- [x] Identify the Pi as a Raspberry Pi 5 with 4 GB RAM.
+- [x] Install Raspberry Pi OS Lite 64-bit and enable SSH key authentication.
+- [x] Connect the Pi to the home Wi-Fi and verify SSH over Wi-Fi.
+- [ ] Detect the attached camera with `rpicam-hello --list-cameras`.
+- [ ] Capture a real still image.
+- [ ] Record and play a short real video.
+- [ ] Record camera model, port, cable orientation, resolution, and stable frame rates.
+
+**Gate:** a documented command repeatedly captures valid media after a reboot.
+
+### Phase 1 — reliable local media pipeline
+
+- [ ] Build the Pi capture service using the supported Raspberry Pi camera stack.
+- [ ] Produce a live-view stream suitable for a phone on the LAN.
+- [ ] Segment recordings into small files so interruption does not corrupt a full day.
+- [ ] Add a size-bounded Pi circular buffer.
+- [ ] Add health and performance telemetry without logging private frames.
+- [ ] Run capture under `systemd` with restart limits and useful logs.
+
+**Gate:** the Pi streams and records for two hours without unbounded memory, disk, or temperature growth.
+
+### Phase 2 — authenticated web application
+
+- [ ] Build the Mac-hosted API and responsive PWA.
+- [ ] Require authentication for the UI, API, live stream, and recordings.
+- [ ] Use secure session cookies and protect state-changing requests.
+- [ ] Show live video, connection state, recording state, disk use, and camera health.
+- [ ] Do not expose Pi or Mac service ports through the home router.
+
+**Gate:** an authorized phone can view live video, while an unauthenticated browser is denied.
+
+### Phase 3 — rolling 24-hour archive and playback
+
+- [ ] Transfer recording segments from Pi to Mac with integrity metadata.
+- [ ] Index segment start/end times and availability.
+- [ ] Build a timeline and playback control in the PWA.
+- [ ] Delete expired recordings automatically after 24 hours.
+- [ ] Add disk high-water protection so retention failure cannot fill the Mac.
+- [ ] Provide explicit clip export before expiry.
+- [ ] Test time zones, restart recovery, partial files, and clock drift.
+
+**Gate:** a phone can play a chosen time from the last 24 hours and expired content is verifiably removed.
+
+### Phase 4 — outage recovery and Version 1 acceptance
+
+- [ ] Simulate Mac shutdown while Pi capture continues.
+- [ ] Reconnect and reconcile the buffered segments without duplicates.
+- [ ] Simulate Wi-Fi interruption and recovery.
+- [ ] Reboot Pi and Mac in different orders.
+- [ ] Verify least-privilege file access and authentication failure behavior.
+- [ ] Complete every Version 1 success check above.
+
+**Gate:** Version 1 is accepted and `P040` may be marked complete for its core Ring-style capability.
+
+### Phase 5 — person and vehicle intelligence
+
+- [ ] Start with motion zones to avoid continuous inference.
+- [ ] Benchmark at least two small person/vehicle detectors on the actual Pi.
+- [ ] Track objects temporarily to avoid counting the same object in every frame.
+- [ ] Add configurable crossing lines and approach/departure direction.
+- [ ] Add event thumbnails, clips, class, confidence, zone, and count.
+- [ ] Display live boxes and counts without baking overlays into original evidence video.
+- [ ] Measure false alerts during daylight, darkness, rain, glare, shadows, and partial occlusion.
+- [ ] Retain an `unknown` outcome rather than forcing weak detections into a class.
+
+**Gate:** replay and live tests meet documented counting and alert accuracy targets.
+
+### Phase 6 — notifications and VPN access
+
+- [ ] Add minimal notification metadata with no private thumbnail by default.
+- [ ] Link notifications to the authenticated application.
+- [ ] Deploy a home VPN and verify phone access away from home.
+- [ ] Confirm no camera, API, database, or media port is publicly reachable.
+- [ ] Document credential rotation, device loss, and account revocation.
+
+**Gate:** remote viewing works only through the VPN and passes the same authentication tests as LAN access.
+
+### Deferred capabilities
+
+- [ ] Two-way audio after microphone, speaker, echo, consent, and privacy testing.
+- [ ] Multiple cameras after one camera is stable.
+- [ ] Facial identification only as a separate consent-based biometric initiative.
+- [ ] Cloud storage only after an explicit privacy, cost, and threat-model decision.
+- [ ] AI HAT or accelerator only after Pi benchmarks prove it is needed.
+
+## Security and privacy requirements
+
+- Keep all media private and local by default.
+- Never commit passwords, session secrets, VPN keys, or captured household media.
+- Require authentication even on the trusted home LAN.
+- Prefer encrypted transport; document any temporary local-development exception.
+- Store password verifiers, never plaintext passwords.
+- Rate-limit sign-in attempts and log security events without logging credentials.
+- Use opaque media identifiers rather than exposing filesystem paths.
+- Define privacy masks before outdoor deployment to avoid unnecessary neighboring-property capture.
+- Make recording status visible to household members and visitors where appropriate.
+- Support verified deletion and explicit export.
+- Do not enable facial recognition as an incidental extension of person detection.
+
+## Performance and reliability measurements
+
+Record these for each milestone on the real Pi:
+
+- Capture resolution and frame rate
+- Live-view glass-to-glass latency
+- Dropped frames and stream reconnect time
+- Pi CPU, RAM, temperature, throttling, and disk use
+- Mac storage growth per hour and retention deletion rate
+- Pi buffer duration at its configured disk limit
+- Segment transfer latency and retry count
+- Person/vehicle detector latency, precision, recall, and counting error when added
+
+## Remaining decisions for the grill-me interview
+
+- [ ] Who receives accounts in Version 1: one administrator or multiple household users?
+- [ ] Required live-stream quality and maximum acceptable delay.
+- [ ] Exact Pi buffer duration and storage limit.
+- [ ] Mac archive location and behavior while the Mac sleeps.
+- [ ] Whether Version 1 records continuously or only after motion.
+- [ ] Which camera zones are allowed and which must be masked.
+- [ ] Whether audio is prohibited, deferred, or included later.
+- [ ] Notification rules and quiet hours.
+- [ ] VPN choice and account recovery policy.
+- [ ] Measured acceptance targets for detection and vehicle counting.
+
+## Initiative completion rule
+
+Do not check off `P040` in the root roadmap merely because files or services exist. Check it off only after the Version 1 acceptance gate is demonstrated. Track partial progress using the linked sub-checklist in the roadmap.

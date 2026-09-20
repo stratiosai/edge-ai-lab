@@ -71,7 +71,16 @@ Capability labels:
 
 ### Home, property, nature, and monitoring
 
-- [ ] **P040 Private Ring-style camera `[A/B/E]`** — motion/person event, clips, local API, phone PWA, authentication, home VPN, retention, and network-loss recovery.
+- [ ] **P040 Private Ring-style camera `[A/B/E]`** — motion/person event, clips, local API, phone PWA, authentication, home VPN, retention, and network-loss recovery. Detailed initiative: [`projects/private-ring-camera/plans.md`](projects/private-ring-camera/plans.md).
+  - [x] Initiative scope and Version 1 success definition agreed.
+  - [x] Pi operating system, SSH, and independent home Wi-Fi established.
+  - [ ] Phase 0: camera detected and real still/video captured.
+  - [ ] Phase 1: reliable Pi streaming, recording, buffering, and health service.
+  - [ ] Phase 2: authenticated phone/laptop web application.
+  - [ ] Phase 3: Mac-hosted rolling 24-hour archive and playback timeline.
+  - [ ] Phase 4: outage recovery and Version 1 acceptance.
+  - [ ] Phase 5: person/vehicle detection, tracking, and counting.
+  - [ ] Phase 6: notifications and VPN-only remote access.
 - [ ] **P041 Package arrival/removal `[A]`** — detect package state changes in a porch zone.
 - [ ] **P042 Garage-door state `[A]`** — open, closed, moving, and unknown states.
 - [ ] **P043 Driveway/parking occupancy `[A]`** — arrival/departure and occupied/empty events.

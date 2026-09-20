@@ -83,3 +83,24 @@ def test_motion_score_uses_the_strongest_short_changes() -> None:
     movement = bytes([255, 255, 255, 255])
     assert pi_agent.motion_score_from_frames(first + quiet, 4) == round(1 / 255, 5)
     assert pi_agent.motion_score_from_frames(first + quiet + movement, 4) >= 0.5
+
+
+def test_motion_analysis_failure_does_not_block_archive_upload(tmp_path: Path, monkeypatch) -> None:
+    cfg = config(tmp_path)
+    recording = segment(cfg.buffer_dir, "100.mp4", 10, time.time() - 10)
+    captured_headers: dict[str, str] = {}
+    monkeypatch.setattr(pi_agent, "segment_times", lambda _: (100, 160))
+    monkeypatch.setattr(
+        pi_agent,
+        "motion_summary",
+        lambda *_: (_ for _ in ()).throw(subprocess.CalledProcessError(1, "ffmpeg")),
+    )
+    monkeypatch.setattr(
+        pi_agent,
+        "post_bytes",
+        lambda _url, _token, _body, headers, _ca: captured_headers.update(headers) or {"status": "ok"},
+    )
+
+    assert pi_agent.upload_segment(cfg, recording)
+    assert "X-Segment-Motion-Score" not in captured_headers
+    assert "X-Segment-Motion-Detected" not in captured_headers

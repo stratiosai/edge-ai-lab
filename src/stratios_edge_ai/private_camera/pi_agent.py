@@ -130,7 +130,17 @@ def post_bytes(
 
 def upload_segment(config: PiAgentConfig, path: Path) -> bool:
     started_at, ended_at = segment_times(path)
-    motion_score, motion_detected = motion_summary(path, config.motion_threshold)
+    motion_headers: dict[str, str] = {}
+    try:
+        motion_score, motion_detected = motion_summary(path, config.motion_threshold)
+        motion_headers = {
+            "X-Segment-Motion-Score": str(motion_score),
+            "X-Segment-Motion-Detected": str(motion_detected).lower(),
+        }
+    except (OSError, subprocess.SubprocessError) as exc:
+        # Motion metadata guides review only. A missing ffmpeg binary or a
+        # malformed analysis decode must never prevent continuous archival.
+        LOG.warning("motion analysis skipped for %s: %s", path.name, exc)
     response = post_bytes(
         f"{config.server_url.rstrip('/')}/api/ingest/segment",
         config.token(),
@@ -141,8 +151,7 @@ def upload_segment(config: PiAgentConfig, path: Path) -> bool:
             "X-Segment-Ended-At": str(ended_at),
             "X-Segment-Extension": path.suffix,
             "X-Segment-Sha256": sha256_file(path),
-            "X-Segment-Motion-Score": str(motion_score),
-            "X-Segment-Motion-Detected": str(motion_detected).lower(),
+            **motion_headers,
         },
         config.ca_file,
     )

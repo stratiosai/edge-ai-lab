@@ -1,0 +1,21 @@
+[Unit]
+Description=StratiosAI private camera capture and segmentation (user service)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=%h/edge-ai-lab
+Environment=PYTHONPATH=%h/edge-ai-lab/src
+EnvironmentFile=%h/edge-camera-secrets/pi-agent.env
+ExecStart=/bin/sh %h/edge-ai-lab/projects/private-ring-camera/pi/capture/run_capture.sh
+Restart=on-failure
+RestartSec=5
+NoNewPrivileges=true
+PrivateTmp=true
+UMask=0077
+StandardOutput=append:%h/edge-camera-logs/capture.log
+StandardError=append:%h/edge-camera-logs/capture.log
+
+[Install]
+WantedBy=default.target

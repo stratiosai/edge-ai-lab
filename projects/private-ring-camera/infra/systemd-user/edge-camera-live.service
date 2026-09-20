@@ -1,0 +1,21 @@
+[Unit]
+Description=StratiosAI private camera token-protected live relay (user service)
+After=edge-camera-capture.service network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=%h/edge-ai-lab
+Environment=PYTHONPATH=%h/edge-ai-lab/src
+EnvironmentFile=%h/edge-camera-secrets/pi-agent.env
+ExecStart=/usr/bin/python3 -m stratios_edge_ai.private_camera.pi_live --fifo ${EDGE_CAMERA_LIVE_FIFO} --token-file %h/edge-camera-secrets/live-token --tls-cert %h/edge-camera-secrets/pi-live-cert.pem --tls-key %h/edge-camera-secrets/pi-live-key.pem --port 8090
+Restart=on-failure
+RestartSec=5
+NoNewPrivileges=true
+PrivateTmp=true
+UMask=0077
+StandardOutput=append:%h/edge-camera-logs/live.log
+StandardError=append:%h/edge-camera-logs/live.log
+
+[Install]
+WantedBy=default.target

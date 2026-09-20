@@ -1,0 +1,21 @@
+[Unit]
+Description=StratiosAI private camera archive uploader and health agent (user service)
+After=edge-camera-capture.service network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=%h/edge-ai-lab
+Environment=PYTHONPATH=%h/edge-ai-lab/src
+EnvironmentFile=%h/edge-camera-secrets/pi-agent.env
+ExecStart=/usr/bin/python3 -m stratios_edge_ai.private_camera.pi_agent --buffer-dir ${EDGE_CAMERA_BUFFER_DIR} --server-url ${EDGE_CAMERA_SERVER_URL} --ingest-token-file %h/edge-camera-secrets/ingest-token --ca-file %h/edge-camera-secrets/mac-ca.pem
+Restart=on-failure
+RestartSec=10
+NoNewPrivileges=true
+PrivateTmp=true
+UMask=0077
+StandardOutput=append:%h/edge-camera-logs/agent.log
+StandardError=append:%h/edge-camera-logs/agent.log
+
+[Install]
+WantedBy=default.target

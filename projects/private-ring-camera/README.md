@@ -82,8 +82,20 @@ The household deployment must put the service behind LAN/VPN HTTPS and leave sec
 
 Synthetic bytes are used for API and retention tests. Real household media is never added to the test suite or Git.
 
+## Soak monitoring
+
+Use the frame-free monitor to collect service, buffer, temperature, and
+throttling evidence during the two-hour acceptance test. Store its output in
+the private camera data directory, not the repository:
+
+```sh
+projects/private-ring-camera/scripts/monitor_pi_soak.sh \
+  "$HOME/.ssh/post_proof_pi_ed25519" stratiosai@192.168.0.65 7200 300 \
+  "$HOME/Library/Application Support/StratiosAI/edge-ai-camera/soak/pi-$(date +%Y%m%d-%H%M%S).log"
+```
+
 ## Deployment boundary
 
-The service is not yet enabled for continuous capture. Before enabling it, confirm that the camera faces the agreed controlled indoor test area and excludes bedrooms, bathrooms, screens, private paperwork, and non-consenting people.
+The Pi capture, live relay, and archive uploader run as user `systemd` services. Before enabling or changing them, confirm that the camera faces the agreed controlled indoor test area and excludes bedrooms, bathrooms, screens, private paperwork, and non-consenting people. The administrator command `loginctl enable-linger stratiosai` is still required once for service start after a Pi reboot without an interactive user login.
 
 The deployment uses a device-only local TLS certificate: the Pi trusts the local CA for uploads, and each household phone must trust that CA before its browser can use the secure-cookie application. No port forwarding or public exposure is used. The reproducible service templates are under [infra](infra); credentials, generated certificates, media, and launchd copies remain outside Git.

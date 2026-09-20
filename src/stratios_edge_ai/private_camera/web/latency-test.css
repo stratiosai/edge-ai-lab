@@ -3,5 +3,6 @@
 body { margin:0; min-height:100vh; display:grid; place-items:center; background:radial-gradient(circle at top,#12344a,#091018 58%); }
 main { width:min(920px,calc(100% - 32px)); padding:32px; text-align:center; }
 .eyebrow { color:#70ccf5; font-size:.8rem; font-weight:800; letter-spacing:.14em; }
-output { display:block; margin:28px 0; font-size:clamp(3.2rem,14vw,9rem); font-variant-numeric:tabular-nums; font-weight:800; letter-spacing:-.06em; }
+output { display:block; margin:28px 0; color:#fff; font-size:clamp(5rem,22vw,12rem); font-variant-numeric:tabular-nums; font-weight:800; letter-spacing:-.07em; text-shadow:0 2px 18px rgba(114,210,255,.35); }
 p { max-width:620px; margin:14px auto; line-height:1.5; }.muted { color:#b7c7d0; }a { color:#72d2ff; font-weight:800; }
+@media (max-width:700px) { main { padding:20px 10px; } output { font-size:20vw; margin:24px 0; } }

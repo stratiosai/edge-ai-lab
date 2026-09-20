@@ -133,7 +133,7 @@ Create these implementation folders only as their milestone begins; do not add e
 
 **Phase 4 — outage recovery and Version 1 acceptance.**
 
-**Active subtask:** complete the remaining resilience gates: Wi-Fi interruption/recovery and Pi/Mac reboot-order testing. The operator accepted the observed retention behavior without waiting for a full elapsed 24-hour window; that historical-expiry proof remains honestly unchecked. The controlled Mac-shutdown recovery passed on 2026-09-20. Phase 5 person/vehicle intelligence has not begun.
+**Active subtask:** complete the Pi/Mac reboot-order resilience test. The operator accepted the observed retention behavior without waiting for a full elapsed 24-hour window; that historical-expiry proof remains honestly unchecked. Controlled Mac-shutdown and Wi-Fi interruption/recovery tests passed on 2026-09-20. Phase 5 person/vehicle intelligence has not begun.
 
 ### Phase 0 — prove the hardware
 
@@ -192,7 +192,7 @@ Create these implementation folders only as their milestone begins; do not add e
 
 - [x] Simulate Mac shutdown while Pi capture continues. (On 2026-09-20, the Mac archive baseline was 264 segments with newest end timestamp `1789931817`; after a user-confirmed clean shutdown and reboot, the LaunchAgent and HTTPS listener returned, the Pi capture/live/uploader services remained active with `throttled=0x0`, and the archive advanced to 275 segments with newest end timestamp `1789932477`.)
 - [x] Reconnect and reconcile the buffered segments without duplicates. (The controlled Mac-shutdown recovery archived 11 additional segments after boot; querying every `(started_at, ended_at, sha256)` group found zero duplicates. This also strengthens the earlier controlled receiver-outage check.)
-- [ ] Simulate Wi-Fi interruption and recovery.
+- [x] Simulate Wi-Fi interruption and recovery. (On 2026-09-20, the Pi Wi-Fi radio was disabled for exactly 60 seconds by a root-scheduled automatic restore: NetworkManager logged radio-off at 15:37:56, radio-on at 15:38:56, reassociation and renewed `192.168.0.65` lease at 15:38:59. The Wi-Fi SSH endpoint was unreachable during the outage; capture, live relay, and uploader remained active afterward with `throttled=0x0`, the Mac archive advanced to 285 segments, and duplicate segment groups remained zero.)
 - [ ] Reboot Pi and Mac in different orders.
 - [x] Verify least-privilege file access and authentication failure behavior. (Mac archive/runtime and Pi secrets, buffer, and logs are owner-only; unauthenticated live and segment API requests return HTTP 401.)
 - [ ] Complete every Version 1 success check above.

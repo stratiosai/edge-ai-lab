@@ -22,6 +22,7 @@ This initiative builds a private, local-first camera system using the existing R
 - [x] Initial access is restricted to the home LAN.
 - [x] Later remote access uses a home VPN, not camera port forwarding.
 - [x] Version 1 records continuously in short segments; motion creates timeline markers rather than deciding whether video exists.
+- [x] Record at 1080p, 15 FPS, H.264, approximately 2–3 Mbps; provide a separate 720p live view targeting less than two seconds of delay.
 - [x] Person and vehicle detection begin after the Version 1 media path works end to end.
 
 ## Definition of Version 1 success
@@ -127,7 +128,8 @@ Create these implementation folders only as their milestone begins; do not add e
 ### Phase 1 — reliable local media pipeline
 
 - [ ] Build the Pi capture service using the supported Raspberry Pi camera stack.
-- [ ] Produce a live-view stream suitable for a phone on the LAN.
+- [ ] Produce a 720p live-view stream suitable for a phone on the LAN with a target delay under two seconds.
+- [ ] Record 1080p at 15 FPS using H.264 at approximately 2–3 Mbps.
 - [ ] Segment recordings into small files so interruption does not corrupt a full day.
 - [ ] Add a size-bounded Pi circular buffer.
 - [ ] Add health and performance telemetry without logging private frames.
@@ -229,7 +231,7 @@ Record these for each milestone on the real Pi:
 ## Remaining decisions for the grill-me interview
 
 - [ ] Who receives accounts in Version 1: one administrator or multiple household users?
-- [ ] Required live-stream quality and maximum acceptable delay.
+- [x] Media profile: 1080p/15 FPS H.264 recording at approximately 2–3 Mbps; 720p live view targeting less than two seconds of delay.
 - [ ] Exact Pi buffer duration and storage limit.
 - [ ] Mac archive location and behavior while the Mac sleeps.
 - [x] Recording mode: continuous short segments with motion markers on the timeline.

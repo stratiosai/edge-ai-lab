@@ -169,7 +169,7 @@ Create these implementation folders only as their milestone begins; do not add e
 - [x] Expire sessions after seven days by default; implement manual logout and administrator revocation of all sessions.
 - [x] Provide a local Mac command that resets the administrator password and revokes existing sessions without printing credentials.
 - [x] Show live video, connection state, recording state, disk use, and camera health.
-- [ ] Do not expose Pi or Mac service ports through the home router. (2026-09-20 local baseline: Mac camera service listens on LAN port 8443; Pi listens on 8090 and SSH 22. Neither device has Tailscale, UPnP, or NAT-PMP mapping tooling installed. Read-only Quantum Fiber Q1000K review after operator login found no Port Forwarding entries, Remote GUI disabled, and an empty UPnP NAT-T mapping list; however, UPnP and UPnP NAT-T are enabled, so future automatic mappings remain possible. The home gateway is reachable at `192.168.0.1` through its self-signed HTTPS dashboard; public reachability and the remaining dynamic-exposure risk still require a deliberate router policy decision.)
+- [ ] Do not expose Pi or Mac service ports through the home router. (2026-09-20 read-only Quantum Fiber Q1000K review found no Port Forwarding entries, Remote GUI disabled, and an empty UPnP NAT-T mapping list. UPnP and UPnP NAT-T remain enabled, so future automatic mappings remain possible; Tailscale is now the approved private access path and no router port was opened. The remaining dynamic-exposure risk still requires a deliberate router policy decision.)
 
 **Gate:** an authorized phone can view live video, while an unauthenticated browser is denied.
 

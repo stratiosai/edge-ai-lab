@@ -23,6 +23,7 @@ This initiative builds a private, local-first camera system using the existing R
 - [x] Later remote access uses a home VPN, not camera port forwarding.
 - [x] Version 1 records continuously in short segments; motion creates timeline markers rather than deciding whether video exists.
 - [x] Record at 1080p, 15 FPS, H.264, approximately 2–3 Mbps; provide a separate 720p live view targeting less than two seconds of delay.
+- [x] The Mac display may sleep, but the plugged-in Mac remains awake while providing archive, API, and web services.
 - [x] Person and vehicle detection begin after the Version 1 media path works end to end.
 
 ## Definition of Version 1 success
@@ -70,6 +71,7 @@ Phone/laptop PWA <---- authenticated API ---+
 - Run the application API, authentication, timeline index, and web UI initially.
 - Enforce retention and expose only authenticated media routes.
 - Receive buffered segments when the Pi reconnects.
+- Remain awake while plugged into power and operating the camera system; display sleep is allowed.
 
 ### Phone and laptop responsibilities
 
@@ -233,7 +235,8 @@ Record these for each milestone on the real Pi:
 - [ ] Who receives accounts in Version 1: one administrator or multiple household users?
 - [x] Media profile: 1080p/15 FPS H.264 recording at approximately 2–3 Mbps; 720p live view targeting less than two seconds of delay.
 - [ ] Exact Pi buffer duration and storage limit.
-- [ ] Mac archive location and behavior while the Mac sleeps.
+- [ ] Exact Mac archive directory or external storage volume.
+- [x] Mac power behavior: display sleep allowed; system remains awake while plugged in and archiving.
 - [x] Recording mode: continuous short segments with motion markers on the timeline.
 - [ ] Which camera zones are allowed and which must be masked.
 - [ ] Whether audio is prohibited, deferred, or included later.

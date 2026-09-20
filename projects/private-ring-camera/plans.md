@@ -41,10 +41,10 @@ This initiative builds a private, local-first camera system using the existing R
 
 Version 1 is complete only when all of these are demonstrated from a real phone and laptop:
 
-- [ ] Sign in with an authorized household account.
+- [x] Sign in with an authorized household account. (The configured `admin` account held an authenticated seven-day secure session and rendered the protected dashboard on 2026-09-20.)
 - [ ] Open a live camera view with acceptable delay and stable playback.
-- [ ] See camera, Pi, network, and storage health.
-- [ ] Browse a timeline covering the available portion of the last 24 hours.
+- [x] See camera, Pi, network, and storage health. (Authenticated UI verification on 2026-09-20 showed current Pi temperature, `throttled=0x0`, server/camera status, and archive size.)
+- [x] Browse a timeline covering the available portion of the last 24 hours. (Authenticated UI verification on 2026-09-20 showed 233 locally available recordings; full 24-hour coverage remains a separate retention gate.)
 - [x] Play a selected recording segment. (A real archived MP4 was opened through the authenticated media endpoint and rendered in the browser on 2026-09-20.)
 - [x] Manually delete a selected segment and verify its media and timeline metadata are gone. (The operator-approved 12:12 PM segment was confirmed in the UI and deleted on 2026-09-20; its database row, MP4, and generated-thumbnail lookup were absent afterward.)
 - [x] Export a selected time range and verify no automatic cloud or Photos copy occurs. (A one-minute range was exported through the authenticated UI on 2026-09-20 as a local ZIP containing selected MP4s plus an integrity manifest; no Photos or cloud action was triggered.)

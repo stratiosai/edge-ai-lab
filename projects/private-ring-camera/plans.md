@@ -21,7 +21,7 @@ This initiative builds a private, local-first camera system using the existing R
 - [x] The Pi keeps a short circular buffer so temporary Mac or network loss does not immediately lose video.
 - [x] Initial access is restricted to the home LAN.
 - [x] Later remote access uses a home VPN, not camera port forwarding.
-- [x] Version 1 records continuously in short segments; motion creates timeline markers rather than deciding whether video exists.
+- [x] Version 1 records continuously in short segments; motion creates timeline markers rather than deciding whether video exists. (Deployed 2026-09-20: the Pi scores one closed minute at 1 FPS and 64×36 grayscale; the authenticated day scrubber shows only scored activity as blue intervals. This is activity detection, not person/vehicle classification.)
 - [x] Record at 1080p, 15 FPS, H.264, approximately 2–3 Mbps; provide a separate 720p live view targeting less than two seconds of delay.
 - [x] The Mac display may sleep, but the plugged-in Mac remains awake while providing archive, API, and web services.
 - [x] The Pi outage buffer defaults to one hour with a 2 GB hard ceiling; both are configurable, and the oldest local segments are removed first.
@@ -173,6 +173,7 @@ Create these implementation folders only as their milestone begins; do not add e
 - [x] Index segment start/end times and availability.
 - [x] Build a timeline and playback control in the PWA.
 - [x] Provide both a table/list and a day-based visual time scrubber with private preview thumbnails.
+- [x] Add low-cost motion activity metadata to the continuous archive; markers guide review without suppressing any recording. (Pi benchmark: 4.2 seconds per one-minute 1080p segment; deployed scrubber verification showed four activity intervals on 2026-09-20.)
 - [x] Delete expired recordings automatically after 24 hours (enforced at service start and every 15 minutes; configurable for future testing).
 - [x] Support confirmed administrator deletion of selected segments before expiry and verify removal from storage and the timeline index. (A real selected segment was browser-confirmed and verified absent from the deployed archive and index on 2026-09-20.)
 - [x] Add disk high-water protection so retention failure cannot fill the Mac.

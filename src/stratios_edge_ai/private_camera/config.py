@@ -14,6 +14,7 @@ class CameraServerConfig:
     data_dir: Path = DEFAULT_DATA_DIR
     retention_hours: int = 24
     retention_interval_minutes: int = 15
+    max_clock_skew_seconds: int = 300
     session_days: int = 7
     secure_cookies: bool = True
     bind_host: str = "127.0.0.1"
@@ -47,6 +48,9 @@ class CameraServerConfig:
             retention_hours=int(os.environ.get("EDGE_CAMERA_RETENTION_HOURS", "24")),
             retention_interval_minutes=max(
                 1, int(os.environ.get("EDGE_CAMERA_RETENTION_INTERVAL_MINUTES", "15"))
+            ),
+            max_clock_skew_seconds=max(
+                0, int(os.environ.get("EDGE_CAMERA_MAX_CLOCK_SKEW_SECONDS", "300"))
             ),
             session_days=int(os.environ.get("EDGE_CAMERA_SESSION_DAYS", "7")),
             secure_cookies=os.environ.get("EDGE_CAMERA_SECURE_COOKIES", "true").lower()

@@ -250,6 +250,9 @@ def create_app(config: CameraServerConfig | None = None) -> FastAPI:
     ) -> dict[str, str]:
         body = await request.body()
         try:
+            latest_accepted_time = int(time.time()) + config.max_clock_skew_seconds
+            if x_segment_started_at > latest_accepted_time or x_segment_ended_at > latest_accepted_time:
+                raise ValueError("segment timestamp is too far ahead; synchronize the Pi clock")
             segment_id, created = archive.ingest(
                 body,
                 x_segment_started_at,
@@ -277,7 +280,7 @@ def create_app(config: CameraServerConfig | None = None) -> FastAPI:
     ) -> dict[str, object]:
         now = int(time.time())
         since = since if since is not None else now - config.retention_hours * 3600
-        until = until if until is not None else now
+        until = until if until is not None else now + config.max_clock_skew_seconds
         return {"segments": archive.list_segments(since, until)}
 
     def segment_or_404(segment_id: str) -> tuple[Path, dict[str, int | str]]:

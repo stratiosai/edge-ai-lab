@@ -146,6 +146,26 @@ def test_segment_ingest_is_idempotent_and_verifies_digest(tmp_path: Path) -> Non
     )
 
 
+def test_timeline_tolerates_small_clock_skew_and_rejects_large_future_time(tmp_path: Path) -> None:
+    client = make_client(tmp_path)
+    now = int(time.time())
+    near_future = ingest(client, started_at=now + 240, ended_at=now + 300)
+    login(client)
+    assert near_future in [segment["id"] for segment in client.get("/api/segments").json()["segments"]]
+    response = client.post(
+        "/api/ingest/segment",
+        content=b"far-future",
+        headers={
+            "X-Ingest-Token": INGEST_TOKEN,
+            "X-Segment-Started-At": str(now + 301),
+            "X-Segment-Ended-At": str(now + 361),
+            "X-Segment-Extension": ".mp4",
+        },
+    )
+    assert response.status_code == 422
+    assert "synchronize the Pi clock" in response.json()["detail"]
+
+
 def test_retention_removes_expired_media_and_index(tmp_path: Path) -> None:
     client = make_client(tmp_path)
     csrf = login(client)

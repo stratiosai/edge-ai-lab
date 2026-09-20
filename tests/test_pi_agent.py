@@ -1,8 +1,10 @@
 from __future__ import annotations
 
 import os
+import time
 from pathlib import Path
 
+from stratios_edge_ai.private_camera import pi_agent
 from stratios_edge_ai.private_camera.pi_agent import PiAgentConfig, closed_segments, prune_buffer
 
 
@@ -46,3 +48,12 @@ def test_prune_buffer_enforces_age_then_size_oldest_first(tmp_path: Path) -> Non
     assert not expired.exists()
     assert not oldest.exists()
     assert newest.exists()
+
+
+def test_partial_or_invalid_segment_stays_buffered_for_retry(tmp_path: Path, monkeypatch) -> None:
+    cfg = config(tmp_path)
+    partial = segment(cfg.buffer_dir, "500.mp4", 10, time.time() - 10)
+    monkeypatch.setattr(pi_agent, "post_health", lambda _: None)
+    monkeypatch.setattr(pi_agent, "upload_segment", lambda *_: (_ for _ in ()).throw(ValueError("N/A")))
+    pi_agent.run_once(cfg)
+    assert partial.exists()

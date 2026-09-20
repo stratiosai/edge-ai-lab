@@ -28,6 +28,7 @@ This initiative builds a private, local-first camera system using the existing R
 - [x] Version 1 has one administrator account; the data model must permit separate household accounts later.
 - [x] Store the Mac archive outside Git and iCloud at `~/Library/Application Support/StratiosAI/edge-ai-camera/archive/` by default; allow a configurable external-storage path later.
 - [x] Version 1 is video-only; microphone capture, listening, audio recording, and two-way talk are deferred.
+- [x] Administrator sessions expire after seven days by default and support manual logout plus a `log out all devices` action.
 - [x] Prove Version 1 indoors against a controlled test area before aiming through a window or deploying toward a street or driveway.
 - [x] The first continuous test scene is a controlled workspace or unused corner that excludes bedrooms, bathrooms, screens, private paperwork, and non-consenting people.
 - [x] Person and vehicle detection begin after the Version 1 media path works end to end.
@@ -152,6 +153,7 @@ Create these implementation folders only as their milestone begins; do not add e
 - [ ] Build the Mac-hosted API and responsive PWA.
 - [ ] Require authentication for the UI, API, live stream, and recordings.
 - [ ] Use secure session cookies and protect state-changing requests.
+- [ ] Expire sessions after seven days by default; implement manual logout and administrator revocation of all sessions.
 - [ ] Show live video, connection state, recording state, disk use, and camera health.
 - [ ] Do not expose Pi or Mac service ports through the home router.
 

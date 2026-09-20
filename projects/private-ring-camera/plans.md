@@ -29,6 +29,7 @@ This initiative builds a private, local-first camera system using the existing R
 - [x] Store the Mac archive outside Git and iCloud at `~/Library/Application Support/StratiosAI/edge-ai-camera/archive/` by default; allow a configurable external-storage path later.
 - [x] Version 1 is video-only; microphone capture, listening, audio recording, and two-way talk are deferred.
 - [x] Prove Version 1 indoors against a controlled test area before aiming through a window or deploying toward a street or driveway.
+- [x] The first continuous test scene is a controlled workspace or unused corner that excludes bedrooms, bathrooms, screens, private paperwork, and non-consenting people.
 - [x] Person and vehicle detection begin after the Version 1 media path works end to end.
 
 ## Definition of Version 1 success
@@ -246,7 +247,8 @@ Record these for each milestone on the real Pi:
 - [x] Mac archive: private, outside Git and iCloud, defaulting to `~/Library/Application Support/StratiosAI/edge-ai-camera/archive/`; path configurable later.
 - [x] Mac power behavior: display sleep allowed; system remains awake while plugged in and archiving.
 - [x] Recording mode: continuous short segments with motion markers on the timeline.
-- [ ] Define the exact allowed indoor field of view and any privacy masks before continuous recording begins.
+- [x] Initial field-of-view boundary: controlled workspace or unused corner; exclude bedrooms, bathrooms, screens, private paperwork, and non-consenting people.
+- [ ] Confirm the physical camera position and privacy mask from a real preview before continuous recording begins.
 - [x] Placement sequence: controlled indoor test area first; window, driveway, or outdoor deployment only after Version 1 acceptance.
 - [x] Audio boundary: Version 1 is video-only; all audio capabilities are deferred.
 - [ ] Notification rules and quiet hours.

@@ -84,8 +84,9 @@ Synthetic bytes are used for API and retention tests. Real household media is ne
 
 ## Soak monitoring
 
-Use the frame-free monitor to collect service, buffer, temperature, and
-throttling evidence during the two-hour acceptance test. Store its output in
+Use the frame-free monitor to collect service/process status, buffer, temperature, and
+throttling evidence during the two-hour acceptance test. It supports both the
+staged systemd service and the detached controlled-test pipeline. Store its output in
 the private camera data directory, not the repository:
 
 ```sh

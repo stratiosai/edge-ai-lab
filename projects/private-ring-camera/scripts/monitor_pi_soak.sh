@@ -24,8 +24,12 @@ deadline=$(( $(date +%s) + duration_seconds ))
 while [ "$(date +%s)" -lt "$deadline" ]; do
   timestamp=$(date -u +%Y-%m-%dT%H:%M:%SZ)
   if snapshot=$(ssh -o BatchMode=yes -o ConnectTimeout=10 -o HostKeyAlias=edge-ai-pi-wifi -i "$key_file" "$pi_target" '
-      printf "services="
-      systemctl --user is-active edge-camera-capture.service edge-camera-live.service edge-camera-agent.service | tr "\n" ","
+      systemd_state=$(systemctl --user is-active edge-camera-capture.service edge-camera-live.service edge-camera-agent.service 2>/dev/null | tr "\n" "," || true)
+      printf "systemd=%s" "$systemd_state"
+      printf " manual_processes="
+      pgrep -f "stratios_edge_ai.private_camera.pi_live" >/dev/null && printf "live," || printf "live-missing,"
+      pgrep -f "stratios_edge_ai.private_camera.pi_agent" >/dev/null && printf "agent," || printf "agent-missing,"
+      pgrep -f "rpicam-vid" >/dev/null && printf "capture" || printf "capture-missing"
       printf " buffer_files="
       find /home/stratiosai/edge-camera-buffer -maxdepth 1 -type f -name "*.mp4" | wc -l
       vcgencmd get_throttled

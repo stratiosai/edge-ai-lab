@@ -2,6 +2,8 @@
 Description=StratiosAI private camera token-protected live relay (user service)
 After=edge-camera-capture.service network-online.target
 Wants=network-online.target
+StartLimitIntervalSec=60
+StartLimitBurst=5
 
 [Service]
 Type=simple

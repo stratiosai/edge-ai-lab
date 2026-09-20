@@ -11,7 +11,7 @@ This project implements the `P040` initiative defined in [plans.md](plans.md). I
 - Camera enumerated as `imx708 [4608x2592 10-bit RGGB]`
 - 1920×1080 still capture validated
 - 1920×1080, 15 FPS MJPEG test stream captured and fully decoded
-- H.264 is not currently available in the installed `rpicam-apps` build (`libav:0`); the encoder toolchain remains a Phase 1 prerequisite
+- H.264 / FFmpeg toolchain installed and verified with a real 1920×1080, 15 FPS, ~2.51 Mbps recording
 
 Private Phase 0 media remains on the Pi under `~/edge-camera-phase0/` and is not committed.
 
@@ -26,7 +26,7 @@ rpicam-vid -n -t 3000 --width 1920 --height 1080 --framerate 15 \
   --codec mjpeg -o "$HOME/edge-camera-phase0/phase0-video.mjpeg"
 ```
 
-MJPEG is only the verified bring-up format. It is not the selected 24-hour archive format.
+MJPEG is only used for the lower-resolution live view. The 24-hour archive uses H.264 MP4 segments.
 
 ## Mac server development
 
@@ -69,6 +69,7 @@ The household deployment must put the service behind LAN/VPN HTTPS and leave sec
 - Authenticated timeline, media playback, and explicit export
 - Confirmed deletion that removes media and metadata
 - Raw authenticated Pi segment ingestion with SHA-256 integrity metadata
+- Token-protected Pi MJPEG relay, proxied through the authenticated Mac API
 - Rolling retention operation and archive high-water protection
 - Private filesystem permissions and no-store/security response headers
 
@@ -80,3 +81,9 @@ The household deployment must put the service behind LAN/VPN HTTPS and leave sec
 ```
 
 Synthetic bytes are used for API and retention tests. Real household media is never added to the test suite or Git.
+
+## Deployment boundary
+
+The service is not yet enabled for continuous capture. Before enabling it, confirm that the camera faces the agreed controlled indoor test area and excludes bedrooms, bathrooms, screens, private paperwork, and non-consenting people.
+
+The deployment uses a device-only local TLS certificate: the Pi trusts the local CA for uploads, and each household phone must trust that CA before its browser can use the secure-cookie application. No port forwarding or public exposure is used. The reproducible service templates are under [infra](infra); credentials, generated certificates, media, and launchd copies remain outside Git.

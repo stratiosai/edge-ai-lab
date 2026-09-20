@@ -100,6 +100,30 @@ def test_ingest_timeline_media_export_and_verified_delete(tmp_path: Path) -> Non
     assert list((tmp_path / "private-camera" / "archive").iterdir()) == []
 
 
+def test_segment_ingest_is_idempotent_and_verifies_digest(tmp_path: Path) -> None:
+    client = make_client(tmp_path)
+    now = int(time.time())
+    body = b"idempotent synthetic segment"
+    headers = {
+        "X-Ingest-Token": INGEST_TOKEN,
+        "X-Segment-Started-At": str(now - 60),
+        "X-Segment-Ended-At": str(now),
+        "X-Segment-Extension": ".mp4",
+        "X-Segment-Sha256": hashlib.sha256(body).hexdigest(),
+    }
+    first = client.post("/api/ingest/segment", content=body, headers=headers)
+    second = client.post("/api/ingest/segment", content=body, headers=headers)
+    assert first.status_code == second.status_code == 200
+    assert first.json()["segment_id"] == second.json()["segment_id"]
+    assert first.json()["result"] == "created"
+    assert second.json()["result"] == "already-present"
+
+    headers["X-Segment-Sha256"] = "0" * 64
+    assert (
+        client.post("/api/ingest/segment", content=b"different", headers=headers).status_code == 422
+    )
+
+
 def test_retention_removes_expired_media_and_index(tmp_path: Path) -> None:
     client = make_client(tmp_path)
     csrf = login(client)

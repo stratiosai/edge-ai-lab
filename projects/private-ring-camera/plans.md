@@ -5,7 +5,7 @@ This initiative builds a private, local-first camera system using the existing R
 ## Initiative status
 
 - **Roadmap capability:** `P040 Private Ring-style camera`
-- **Current phase:** Phase 0 camera media proven; Phase 1 encoder and service implementation in progress
+- **Current phase:** Phase 0 camera media proven; Phase 1 pipeline implementation and real service deployment in progress
 - **Target network:** home LAN first; home VPN later
 - **Deployment principle:** no router port forwarding and no publicly exposed camera service
 - **Hardware upgrade policy:** prove a measured limit before buying a HAT or accelerator
@@ -145,13 +145,13 @@ Create these implementation folders only as their milestone begins; do not add e
 
 ### Phase 1 — reliable local media pipeline
 
-- [ ] Build the Pi capture service using the supported Raspberry Pi camera stack.
-- [ ] Produce a 720p live-view stream suitable for a phone on the LAN with a target delay under two seconds.
-- [ ] Record 1080p at 15 FPS using H.264 at approximately 2–3 Mbps.
-- [ ] Segment recordings into small files so interruption does not corrupt a full day.
-- [ ] Add a configurable Pi circular buffer defaulting to one hour with a 2 GB hard ceiling.
-- [ ] Add health and performance telemetry without logging private frames.
-- [ ] Run capture under `systemd` with restart limits and useful logs.
+- [x] Build the Pi capture service using the supported Raspberry Pi camera stack.
+- [ ] Produce a 720p live-view stream suitable for a phone on the LAN with a target delay under two seconds. (Implemented; awaiting on-device service and latency measurement.)
+- [x] Record 1080p at 15 FPS using H.264 at approximately 2–3 Mbps.
+- [x] Segment recordings into small files so interruption does not corrupt a full day.
+- [x] Add a configurable Pi circular buffer defaulting to one hour with a 2 GB hard ceiling.
+- [x] Add health and performance telemetry without logging private frames.
+- [ ] Run capture under `systemd` with restart limits and useful logs. (Units created; awaiting privacy-confirmed enablement.)
 
 **Gate:** the Pi streams and records for two hours without unbounded memory, disk, or temperature growth.
 

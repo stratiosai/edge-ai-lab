@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key><string>com.stratiosai.edge-camera-server</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>__REPOSITORY__/.venv/bin/edge-camera-server</string>
+  </array>
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>EDGE_CAMERA_DATA_DIR</key><string>__DATA_DIR__</string>
+    <key>EDGE_CAMERA_BIND_HOST</key><string>0.0.0.0</string>
+    <key>EDGE_CAMERA_BIND_PORT</key><string>8443</string>
+    <key>EDGE_CAMERA_SECURE_COOKIES</key><string>true</string>
+    <key>EDGE_CAMERA_INGEST_TOKEN</key><string>__INGEST_TOKEN__</string>
+    <key>EDGE_CAMERA_PI_LIVE_URL</key><string>http://192.168.0.65:8090/live.mjpg</string>
+    <key>EDGE_CAMERA_PI_LIVE_TOKEN</key><string>__LIVE_TOKEN__</string>
+    <key>EDGE_CAMERA_TLS_CERT_FILE</key><string>__CERT_FILE__</string>
+    <key>EDGE_CAMERA_TLS_KEY_FILE</key><string>__KEY_FILE__</string>
+  </dict>
+  <key>RunAtLoad</key><true/>
+  <key>KeepAlive</key><true/>
+  <key>ProcessType</key><string>Background</string>
+  <key>StandardOutPath</key><string>__DATA_DIR__/server.log</string>
+  <key>StandardErrorPath</key><string>__DATA_DIR__/server.log</string>
+</dict>
+</plist>

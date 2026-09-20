@@ -12,6 +12,8 @@ dependencies = []
 [project.scripts]
 edge-camera-server = "stratios_edge_ai.private_camera.cli:serve"
 edge-camera-admin = "stratios_edge_ai.private_camera.cli:admin"
+edge-camera-pi-agent = "stratios_edge_ai.private_camera.pi_agent:main"
+edge-camera-pi-live = "stratios_edge_ai.private_camera.pi_live:main"
 
 [project.optional-dependencies]
 dev = [

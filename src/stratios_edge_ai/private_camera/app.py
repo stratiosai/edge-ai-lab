@@ -219,11 +219,16 @@ def create_app(config: CameraServerConfig | None = None) -> FastAPI:
         x_segment_started_at: int = Header(),
         x_segment_ended_at: int = Header(),
         x_segment_extension: str = Header(default=".mp4"),
+        x_segment_sha256: str | None = Header(default=None),
     ) -> dict[str, str]:
         body = await request.body()
         try:
-            segment_id = archive.ingest(
-                body, x_segment_started_at, x_segment_ended_at, x_segment_extension
+            segment_id, created = archive.ingest(
+                body,
+                x_segment_started_at,
+                x_segment_ended_at,
+                x_segment_extension,
+                x_segment_sha256,
             )
         except ArchiveFullError as exc:
             raise HTTPException(status_code=status.HTTP_507_INSUFFICIENT_STORAGE) from exc
@@ -231,7 +236,11 @@ def create_app(config: CameraServerConfig | None = None) -> FastAPI:
             raise HTTPException(
                 status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(exc)
             ) from exc
-        return {"status": "ok", "segment_id": segment_id}
+        return {
+            "status": "ok",
+            "segment_id": segment_id,
+            "result": "created" if created else "already-present",
+        }
 
     @app.get("/api/segments")
     def segments(
@@ -290,13 +299,13 @@ def create_app(config: CameraServerConfig | None = None) -> FastAPI:
     async def live(
         _user: Annotated[dict[str, int | str], Depends(session_user)],
     ) -> StreamingResponse:
-        if not config.pi_live_url:
+        if not config.pi_live_url or not config.pi_live_token:
             raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE)
 
         async def stream():
             async with (
                 httpx.AsyncClient(timeout=None) as client,
-                client.stream("GET", config.pi_live_url) as upstream,
+                client.stream("GET", config.pi_live_url, headers={"X-Live-Token": config.pi_live_token}) as upstream,
             ):
                 upstream.raise_for_status()
                 async for chunk in upstream.aiter_bytes():

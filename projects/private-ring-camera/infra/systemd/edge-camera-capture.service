@@ -1,0 +1,21 @@
+[Unit]
+Description=StratiosAI private camera capture and segmentation
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=stratiosai
+Group=stratiosai
+EnvironmentFile=-/etc/edge-camera/pi-agent.env
+ExecStart=/opt/edge-ai-lab/projects/private-ring-camera/pi/capture/run_capture.sh
+Restart=on-failure
+RestartSec=5
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=read-only
+ReadWritePaths=/home/stratiosai/edge-camera-buffer /home/stratiosai/edge-camera-live
+
+[Install]
+WantedBy=multi-user.target

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import hashlib
+import hmac
 import os
 import time
 import uuid
@@ -28,13 +29,35 @@ class Archive:
             ).fetchone()
         return int(row["total"])
 
-    def ingest(self, body: bytes, started_at: int, ended_at: int, extension: str = ".mp4") -> str:
+    def ingest(
+        self,
+        body: bytes,
+        started_at: int,
+        ended_at: int,
+        extension: str = ".mp4",
+        expected_sha256: str | None = None,
+    ) -> tuple[str, bool]:
         if not body:
             raise ValueError("segment is empty")
         if ended_at <= started_at:
             raise ValueError("segment end must be after start")
         if extension not in {".mp4", ".m4s"}:
             raise ValueError("unsupported segment extension")
+
+        digest = hashlib.sha256(body).hexdigest()
+        if expected_sha256 and not hmac.compare_digest(digest, expected_sha256.lower()):
+            raise ValueError("segment SHA-256 does not match body")
+        with self.database.connect() as connection:
+            existing = connection.execute(
+                """
+                SELECT id FROM segments
+                WHERE started_at = ? AND ended_at = ? AND sha256 = ?
+                """,
+                (started_at, ended_at, digest),
+            ).fetchone()
+        if existing is not None:
+            return str(existing["id"]), False
+
         if self.bytes_used() + len(body) > self.max_bytes:
             raise ArchiveFullError("archive high-water limit reached")
 
@@ -42,7 +65,6 @@ class Archive:
         filename = f"{started_at}-{segment_id}{extension}"
         final_path = self.directory / filename
         temporary_path = self.directory / f".{filename}.partial"
-        digest = hashlib.sha256(body).hexdigest()
 
         self.directory.mkdir(parents=True, exist_ok=True, mode=0o700)
         with temporary_path.open("xb") as handle:
@@ -73,7 +95,7 @@ class Archive:
         except Exception:
             final_path.unlink(missing_ok=True)
             raise
-        return segment_id
+        return segment_id, True
 
     def list_segments(self, since: int, until: int) -> list[dict[str, int | str]]:
         with self.database.connect() as connection:

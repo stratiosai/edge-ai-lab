@@ -39,6 +39,8 @@ CREATE TABLE IF NOT EXISTS segments (
 );
 
 CREATE INDEX IF NOT EXISTS segments_started_at_idx ON segments(started_at DESC);
+CREATE UNIQUE INDEX IF NOT EXISTS segments_idempotency_idx
+    ON segments(started_at, ended_at, sha256);
 CREATE INDEX IF NOT EXISTS sessions_user_id_idx ON sessions(user_id);
 
 CREATE TABLE IF NOT EXISTS camera_health (

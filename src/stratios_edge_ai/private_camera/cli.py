@@ -15,7 +15,15 @@ from .database import Database
 
 def serve() -> None:
     config = CameraServerConfig.from_env()
-    uvicorn.run(create_app(config), host=config.bind_host, port=config.bind_port)
+    if bool(config.tls_cert_file) != bool(config.tls_key_file):
+        raise SystemExit("set both EDGE_CAMERA_TLS_CERT_FILE and EDGE_CAMERA_TLS_KEY_FILE")
+    uvicorn.run(
+        create_app(config),
+        host=config.bind_host,
+        port=config.bind_port,
+        ssl_certfile=str(config.tls_cert_file) if config.tls_cert_file else None,
+        ssl_keyfile=str(config.tls_key_file) if config.tls_key_file else None,
+    )
 
 
 def admin() -> None:

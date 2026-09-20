@@ -17,7 +17,10 @@ class CameraServerConfig:
     secure_cookies: bool = True
     bind_host: str = "127.0.0.1"
     bind_port: int = 8443
+    tls_cert_file: Path | None = None
+    tls_key_file: Path | None = None
     pi_live_url: str | None = None
+    pi_live_token: str | None = None
     ingest_token: str | None = None
     max_archive_bytes: int = 64 * 1024 * 1024 * 1024
 
@@ -40,7 +43,18 @@ class CameraServerConfig:
             not in {"0", "false", "no"},
             bind_host=os.environ.get("EDGE_CAMERA_BIND_HOST", "127.0.0.1"),
             bind_port=int(os.environ.get("EDGE_CAMERA_BIND_PORT", "8443")),
+            tls_cert_file=(
+                Path(os.environ["EDGE_CAMERA_TLS_CERT_FILE"]).expanduser()
+                if os.environ.get("EDGE_CAMERA_TLS_CERT_FILE")
+                else None
+            ),
+            tls_key_file=(
+                Path(os.environ["EDGE_CAMERA_TLS_KEY_FILE"]).expanduser()
+                if os.environ.get("EDGE_CAMERA_TLS_KEY_FILE")
+                else None
+            ),
             pi_live_url=os.environ.get("EDGE_CAMERA_PI_LIVE_URL") or None,
+            pi_live_token=os.environ.get("EDGE_CAMERA_PI_LIVE_TOKEN") or None,
             ingest_token=os.environ.get("EDGE_CAMERA_INGEST_TOKEN") or None,
             max_archive_bytes=int(
                 os.environ.get("EDGE_CAMERA_MAX_ARCHIVE_BYTES", str(64 * 1024**3))

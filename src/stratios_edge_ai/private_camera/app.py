@@ -23,6 +23,7 @@ from .security import (
 )
 
 WEB_ROOT = Path(__file__).with_name("web")
+LIVE_MJPEG_BOUNDARY = "edge-camera-frame"
 
 
 class LoginRequest(BaseModel):
@@ -314,6 +315,9 @@ def create_app(config: CameraServerConfig | None = None) -> FastAPI:
                 async for chunk in upstream.aiter_bytes():
                     yield chunk
 
-        return StreamingResponse(stream(), media_type="multipart/x-mixed-replace; boundary=frame")
+        return StreamingResponse(
+            stream(),
+            media_type=f"multipart/x-mixed-replace; boundary={LIVE_MJPEG_BOUNDARY}",
+        )
 
     return app

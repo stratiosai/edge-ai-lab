@@ -12,6 +12,7 @@ pi_target=$2
 duration_seconds=$3
 interval_seconds=$4
 log_file=$5
+archive_db=${EDGE_CAMERA_DATABASE_PATH:-"$HOME/Library/Application Support/StratiosAI/edge-ai-camera/camera.sqlite3"}
 
 case $duration_seconds:$interval_seconds in
   *[!0-9:]*|0:*|*:0) echo "duration and interval must be positive seconds" >&2; exit 64 ;;
@@ -38,6 +39,12 @@ while [ "$(date +%s)" -lt "$deadline" ]; do
     printf '%s %s\n' "$timestamp" "$snapshot" >> "$log_file"
   else
     printf '%s monitor_error=%s\n' "$timestamp" "$snapshot" >> "$log_file"
+  fi
+  if [ -r "$archive_db" ] && command -v sqlite3 >/dev/null 2>&1; then
+    archive_snapshot=$(sqlite3 "$archive_db" 'select count(*), coalesce(max(started_at), 0) from segments;' 2>/dev/null || printf 'unavailable')
+    printf '%s archive_segments=%s\n' "$timestamp" "$archive_snapshot" >> "$log_file"
+  else
+    printf '%s archive_segments=unavailable\n' "$timestamp" >> "$log_file"
   fi
   sleep "$interval_seconds"
 done

@@ -21,6 +21,7 @@ This initiative builds a private, local-first camera system using the existing R
 - [x] The Pi keeps a short circular buffer so temporary Mac or network loss does not immediately lose video.
 - [x] Initial access is restricted to the home LAN.
 - [x] Later remote access uses a home VPN, not camera port forwarding.
+- [x] Version 1 records continuously in short segments; motion creates timeline markers rather than deciding whether video exists.
 - [x] Person and vehicle detection begin after the Version 1 media path works end to end.
 
 ## Definition of Version 1 success
@@ -231,7 +232,7 @@ Record these for each milestone on the real Pi:
 - [ ] Required live-stream quality and maximum acceptable delay.
 - [ ] Exact Pi buffer duration and storage limit.
 - [ ] Mac archive location and behavior while the Mac sleeps.
-- [ ] Whether Version 1 records continuously or only after motion.
+- [x] Recording mode: continuous short segments with motion markers on the timeline.
 - [ ] Which camera zones are allowed and which must be masked.
 - [ ] Whether audio is prohibited, deferred, or included later.
 - [ ] Notification rules and quiet hours.

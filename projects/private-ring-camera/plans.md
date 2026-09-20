@@ -184,7 +184,7 @@ Create these implementation folders only as their milestone begins; do not add e
 ### Phase 4 — outage recovery and Version 1 acceptance
 
 - [ ] Simulate Mac shutdown while Pi capture continues.
-- [ ] Reconnect and reconcile the buffered segments without duplicates.
+- [x] Reconnect and reconcile the buffered segments without duplicates. (A controlled Mac receiver outage retained Pi segments, then uploaded each once after recovery.)
 - [ ] Simulate Wi-Fi interruption and recovery.
 - [ ] Reboot Pi and Mac in different orders.
 - [ ] Verify least-privilege file access and authentication failure behavior.

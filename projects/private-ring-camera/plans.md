@@ -30,6 +30,7 @@ This initiative builds a private, local-first camera system using the existing R
 - [x] Version 1 is video-only; microphone capture, listening, audio recording, and two-way talk are deferred.
 - [x] Administrator sessions expire after seven days by default and support manual logout plus a `log out all devices` action.
 - [x] Version 1 password recovery requires a local reset command on the Mac; no email or cloud recovery service is used.
+- [x] Push notifications are excluded from the core Version 1 gate and begin with person/vehicle detection; V1 shows health in the web app.
 - [x] Prove Version 1 indoors against a controlled test area before aiming through a window or deploying toward a street or driveway.
 - [x] The first continuous test scene is a controlled workspace or unused corner that excludes bedrooms, bathrooms, screens, private paperwork, and non-consenting people.
 - [x] Person and vehicle detection begin after the Version 1 media path works end to end.
@@ -194,6 +195,7 @@ Create these implementation folders only as their milestone begins; do not add e
 - [ ] Display live boxes and counts without baking overlays into original evidence video.
 - [ ] Measure false alerts during daylight, darkness, rain, glare, shadows, and partial occlusion.
 - [ ] Retain an `unknown` outcome rather than forcing weak detections into a class.
+- [ ] Add deduplicated person/vehicle notifications only after event accuracy is measured.
 
 **Gate:** replay and live tests meet documented counting and alert accuracy targets.
 
@@ -255,7 +257,8 @@ Record these for each milestone on the real Pi:
 - [ ] Confirm the physical camera position and privacy mask from a real preview before continuous recording begins.
 - [x] Placement sequence: controlled indoor test area first; window, driveway, or outdoor deployment only after Version 1 acceptance.
 - [x] Audio boundary: Version 1 is video-only; all audio capabilities are deferred.
-- [ ] Notification rules and quiet hours.
+- [x] Notification scope: excluded from the core Version 1 gate and introduced with person/vehicle detection.
+- [ ] Notification rules and quiet hours for the later detection phase.
 - [ ] VPN choice and account recovery policy.
 - [ ] Measured acceptance targets for detection and vehicle counting.
 

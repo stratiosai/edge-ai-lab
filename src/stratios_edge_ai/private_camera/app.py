@@ -1,8 +1,10 @@
 """Authenticated FastAPI application for the private camera."""
 
+import asyncio
 import hmac
 import json
 import time
+from contextlib import asynccontextmanager, suppress
 from pathlib import Path
 from typing import Annotated
 
@@ -39,7 +41,27 @@ def create_app(config: CameraServerConfig | None = None) -> FastAPI:
     archive = Archive(database, config.archive_dir, config.max_archive_bytes)
     limiter = LoginLimiter()
 
-    app = FastAPI(title="StratiosAI Private Camera", docs_url=None, redoc_url=None)
+    async def expire_on_schedule() -> None:
+        while True:
+            archive.expire(int(time.time()) - config.retention_hours * 3600)
+            await asyncio.sleep(config.retention_interval_minutes * 60)
+
+    @asynccontextmanager
+    async def lifespan(_: FastAPI):
+        retention_task = asyncio.create_task(expire_on_schedule())
+        try:
+            yield
+        finally:
+            retention_task.cancel()
+            with suppress(asyncio.CancelledError):
+                await retention_task
+
+    app = FastAPI(
+        title="StratiosAI Private Camera",
+        docs_url=None,
+        redoc_url=None,
+        lifespan=lifespan,
+    )
     app.state.config = config
     app.state.database = database
     app.state.archive = archive

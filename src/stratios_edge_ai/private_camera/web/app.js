@@ -103,15 +103,23 @@ function renderScrubberSelection() {
   const time = document.querySelector("#scrubber-time");
   const position = document.querySelector("#scrubber-position");
   const play = document.querySelector("#scrubber-play");
+  const previous = document.querySelector("#scrubber-previous");
+  const next = document.querySelector("#scrubber-next");
+  const rail = document.querySelector(".time-rail");
   if (!segment) {
     image.removeAttribute("src"); image.hidden = true; empty.hidden = false;
     time.textContent = "No recordings for this day"; position.textContent = ""; play.href = "#";
+    previous.disabled = true; next.disabled = true;
+    rail.style.setProperty("--thumb-position", "0");
     return;
   }
   const date = new Date(segment.started_at * 1000);
-  time.textContent = date.toLocaleString();
-  position.textContent = `${Number(slider.value) + 1} of ${selections.length}`;
+  time.textContent = date.toLocaleString(undefined, {weekday: "short", month: "short", day: "numeric", hour: "numeric", minute: "2-digit", second: "2-digit"});
+  position.textContent = `Recording ${Number(slider.value) + 1} of ${selections.length}`;
   play.href = `/api/segments/${segment.id}/media`;
+  previous.disabled = Number(slider.value) === 0;
+  next.disabled = Number(slider.value) === selections.length - 1;
+  rail.style.setProperty("--thumb-position", selections.length > 1 ? String((Number(slider.value) / (selections.length - 1)) * 100) : "0");
   image.hidden = false; empty.hidden = true;
   image.src = `/api/segments/${segment.id}/thumbnail?cache=${segment.id}`;
   image.onerror = () => { image.hidden = true; empty.hidden = false; };
@@ -127,7 +135,21 @@ function populateScrubber() {
   const slider = document.querySelector("#recording-slider");
   slider.max = Math.max(0, selections.length - 1);
   slider.value = Math.min(Number(slider.value), Number(slider.max));
+  const markers = document.querySelector("#segment-markers");
+  markers.replaceChildren(...selections.map((_, index) => {
+    const marker = document.createElement("span");
+    marker.className = "segment-marker";
+    if (index === Number(slider.value)) marker.classList.add("selected");
+    return marker;
+  }));
   renderScrubberSelection();
+}
+
+function stepScrubber(direction) {
+  const slider = document.querySelector("#recording-slider");
+  slider.value = Math.max(0, Math.min(Number(slider.max), Number(slider.value) + direction));
+  renderScrubberSelection();
+  document.querySelectorAll(".segment-marker").forEach((marker, index) => marker.classList.toggle("selected", index === Number(slider.value)));
 }
 
 function setRecordingView(view) {
@@ -154,7 +176,9 @@ document.querySelector("#refresh").addEventListener("click", () => Promise.all([
 document.querySelector("#list-view-button").addEventListener("click", () => setRecordingView("list"));
 document.querySelector("#scrubber-view-button").addEventListener("click", () => setRecordingView("scrubber"));
 document.querySelector("#recording-day").addEventListener("change", () => { document.querySelector("#recording-slider").value = 0; populateScrubber(); });
-document.querySelector("#recording-slider").addEventListener("input", renderScrubberSelection);
+document.querySelector("#recording-slider").addEventListener("input", () => stepScrubber(0));
+document.querySelector("#scrubber-previous").addEventListener("click", () => stepScrubber(-1));
+document.querySelector("#scrubber-next").addEventListener("click", () => stepScrubber(1));
 
 (async () => {
   const response = await api("/api/session");

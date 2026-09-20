@@ -47,13 +47,28 @@
           </div>
           <div id="list-view" role="tabpanel"><div id="timeline" class="timeline"></div></div>
           <div id="scrubber-view" role="tabpanel" hidden>
-            <div class="scrubber-controls">
-              <label for="recording-day">Day<select id="recording-day" aria-label="Recording day"></select></label>
-              <output id="scrubber-time" for="recording-slider">Select a recording</output>
+            <div class="scrubber-player">
+              <div class="scrubber-topbar">
+                <span class="recording-badge">Recorded</span>
+                <label class="day-picker" for="recording-day"><span class="visually-hidden">Recording day</span><select id="recording-day" aria-label="Recording day"></select></label>
+                <span class="camera-label">Edge camera</span>
+              </div>
+              <div class="scrubber-preview">
+                <img id="scrubber-thumbnail" alt="Selected recording preview">
+                <div id="scrubber-empty" class="muted">A preview will appear when a thumbnail is ready.</div>
+                <output id="scrubber-time" for="recording-slider">Select a recording</output>
+              </div>
+              <div class="time-rail">
+                <div id="segment-markers" class="segment-markers" aria-hidden="true"></div>
+                <input id="recording-slider" type="range" min="0" max="0" value="0" step="1" aria-label="Recording time">
+              </div>
+              <div class="scrubber-actions">
+                <button id="scrubber-previous" class="transport" type="button" aria-label="Previous recording">◀</button>
+                <a id="scrubber-play" class="transport play-transport" href="#">Play</a>
+                <button id="scrubber-next" class="transport" type="button" aria-label="Next recording">▶</button>
+              </div>
+              <div class="scrubber-footer"><span id="scrubber-position"></span><span>Continuous archive · local only</span></div>
             </div>
-            <div class="scrubber-preview"><img id="scrubber-thumbnail" alt="Selected recording preview"><div id="scrubber-empty" class="muted">A preview will appear when a thumbnail is ready.</div></div>
-            <input id="recording-slider" type="range" min="0" max="0" value="0" step="1" aria-label="Recording time">
-            <div class="scrubber-actions"><a id="scrubber-play" class="button-link" href="#">Play recording</a><span id="scrubber-position" class="muted"></span></div>
           </div>
         </article>
       </section>

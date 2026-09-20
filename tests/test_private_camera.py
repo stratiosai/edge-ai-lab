@@ -140,6 +140,29 @@ def test_retention_removes_expired_media_and_index(tmp_path: Path) -> None:
     assert client.get(f"/api/segments/{current_id}/media").status_code == 200
 
 
+def test_startup_retention_removes_only_expired_recordings(tmp_path: Path) -> None:
+    config = CameraServerConfig(
+        data_dir=tmp_path / "private-camera",
+        secure_cookies=False,
+        ingest_token=INGEST_TOKEN,
+        retention_interval_minutes=60,
+    )
+    app = create_app(config)
+    set_admin(app.state.database, "admin", PASSWORD)
+    with TestClient(app) as client:
+        now = int(time.time())
+        expired_id = ingest(client, started_at=now - 90000, ended_at=now - 89900)
+        current_id = ingest(client, started_at=now - 120, ended_at=now - 60)
+        # The next clean service start enforces the retention window; the
+        # current segment remains available and no user action is required.
+    with TestClient(app) as restarted:
+        assert restarted.get(f"/api/segments/{expired_id}/media").status_code == 401
+        csrf = login(restarted)
+        assert restarted.get(f"/api/segments/{expired_id}/media").status_code == 404
+        assert restarted.get(f"/api/segments/{current_id}/media").status_code == 200
+        assert csrf
+
+
 def test_ingest_auth_validation_and_storage_high_water(tmp_path: Path) -> None:
     client = make_client(tmp_path, max_archive_bytes=8)
     now = int(time.time())

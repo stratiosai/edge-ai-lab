@@ -153,7 +153,7 @@ Create these implementation folders only as their milestone begins; do not add e
 - [x] Add health and performance telemetry without logging private frames.
 - [x] Run capture under `systemd` with restart limits and useful logs. (User lingering was enabled and capture, live, and uploader units were enabled and verified active on 2026-09-20.)
 
-**Gate:** the Pi streams and records for two hours without unbounded memory, disk, or temperature growth.
+**Gate:** the Pi streams and records for two hours without unbounded memory, disk, or temperature growth. **Passed 2026-09-20:** 24 five-minute samples over the full two-hour monitor window kept capture/live/uploader active, showed no throttling, ranged from 55.4–59.8°C, kept the Pi buffer bounded to 2 files in sampled checks, and advanced the Mac archive from 93 to 207 segments without monitor errors.
 
 ### Phase 2 — authenticated web application
 

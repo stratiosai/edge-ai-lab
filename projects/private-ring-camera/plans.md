@@ -46,7 +46,7 @@ Version 1 is complete only when all of these are demonstrated from a real phone 
 - [ ] See camera, Pi, network, and storage health.
 - [ ] Browse a timeline covering the available portion of the last 24 hours.
 - [x] Play a selected recording segment. (A real archived MP4 was opened through the authenticated media endpoint and rendered in the browser on 2026-09-20.)
-- [ ] Manually delete a selected segment and verify its media and timeline metadata are gone.
+- [x] Manually delete a selected segment and verify its media and timeline metadata are gone. (The operator-approved 12:12 PM segment was confirmed in the UI and deleted on 2026-09-20; its database row, MP4, and generated-thumbnail lookup were absent afterward.)
 - [x] Export a selected time range and verify no automatic cloud or Photos copy occurs. (A one-minute range was exported through the authenticated UI on 2026-09-20 as a local ZIP containing selected MP4s plus an integrity manifest; no Photos or cloud action was triggered.)
 - [ ] Confirm recordings expire automatically after 24 hours.
 - [x] Reboot the Pi and recover without manually restarting the application. (On 2026-09-20, the Pi returned after a 44-second reboot with user lingering and all three enabled services active; a post-reboot segment then reached the Mac archive.)
@@ -174,7 +174,7 @@ Create these implementation folders only as their milestone begins; do not add e
 - [x] Build a timeline and playback control in the PWA.
 - [x] Provide both a table/list and a day-based visual time scrubber with private preview thumbnails.
 - [x] Delete expired recordings automatically after 24 hours (enforced at service start and every 15 minutes; configurable for future testing).
-- [ ] Support confirmed administrator deletion of selected segments before expiry and verify removal from storage and the timeline index.
+- [x] Support confirmed administrator deletion of selected segments before expiry and verify removal from storage and the timeline index. (A real selected segment was browser-confirmed and verified absent from the deployed archive and index on 2026-09-20.)
 - [x] Add disk high-water protection so retention failure cannot fill the Mac.
 - [x] Provide explicit selected-time-range export before expiry without automatic Photos or cloud copying. (Deployed UI acceptance verified a selected local ZIP export with a manifest on 2026-09-20.)
 - [ ] Test time zones, restart recovery, partial files, and clock drift.

@@ -5,7 +5,7 @@ This initiative builds a private, local-first camera system using the existing R
 ## Initiative status
 
 - **Roadmap capability:** `P040 Private Ring-style camera`
-- **Current phase:** Phase 0 camera media proven; Phase 1 pipeline implementation and real service deployment in progress
+- **Current phase:** Phases 1–3 running on the home LAN; retention, restart, and phone acceptance remain in progress
 - **Target network:** home LAN first; home VPN later
 - **Deployment principle:** no router port forwarding and no publicly exposed camera service
 - **Hardware upgrade policy:** prove a measured limit before buying a HAT or accelerator
@@ -139,42 +139,43 @@ Create these implementation folders only as their milestone begins; do not add e
 - [x] Record and decode a short real video.
 - [x] Record camera model, port, resolution, frame rate, temperature, and throttling state.
 - [ ] Confirm the physical ribbon-cable orientation during the next hands-on inspection.
-- [ ] Aim the camera only at the agreed indoor test area during Version 1 development.
+- [x] Aim the camera only at the agreed indoor test area during Version 1 development.
 
 **Gate:** a documented command repeatedly captures valid media after a reboot.
 
 ### Phase 1 — reliable local media pipeline
 
 - [x] Build the Pi capture service using the supported Raspberry Pi camera stack.
-- [ ] Produce a 720p live-view stream suitable for a phone on the LAN with a target delay under two seconds. (Implemented; awaiting on-device service and latency measurement.)
+- [ ] Produce a 720p live-view stream suitable for a phone on the LAN with a target delay under two seconds. (Running and rendered at 1280×720; glass-to-glass latency remains to be measured.)
 - [x] Record 1080p at 15 FPS using H.264 at approximately 2–3 Mbps.
 - [x] Segment recordings into small files so interruption does not corrupt a full day.
 - [x] Add a configurable Pi circular buffer defaulting to one hour with a 2 GB hard ceiling.
 - [x] Add health and performance telemetry without logging private frames.
-- [ ] Run capture under `systemd` with restart limits and useful logs. (Units created; awaiting privacy-confirmed enablement.)
+- [ ] Run capture under `systemd` with restart limits and useful logs. (The live test uses user-owned processes; units are created but not yet enabled.)
 
 **Gate:** the Pi streams and records for two hours without unbounded memory, disk, or temperature growth.
 
 ### Phase 2 — authenticated web application
 
-- [ ] Build the Mac-hosted API and responsive PWA.
-- [ ] Require authentication for the UI, API, live stream, and recordings.
-- [ ] Use secure session cookies and protect state-changing requests.
-- [ ] Expire sessions after seven days by default; implement manual logout and administrator revocation of all sessions.
-- [ ] Provide a local Mac command that resets the administrator password and revokes existing sessions without printing credentials.
-- [ ] Show live video, connection state, recording state, disk use, and camera health.
+- [x] Build the Mac-hosted API and responsive PWA.
+- [x] Require authentication for the UI, API, live stream, and recordings.
+- [x] Use secure session cookies and protect state-changing requests.
+- [x] Expire sessions after seven days by default; implement manual logout and administrator revocation of all sessions.
+- [x] Provide a local Mac command that resets the administrator password and revokes existing sessions without printing credentials.
+- [x] Show live video, connection state, recording state, disk use, and camera health.
 - [ ] Do not expose Pi or Mac service ports through the home router.
 
 **Gate:** an authorized phone can view live video, while an unauthenticated browser is denied.
 
 ### Phase 3 — rolling 24-hour archive and playback
 
-- [ ] Transfer recording segments from Pi to Mac with integrity metadata.
-- [ ] Index segment start/end times and availability.
-- [ ] Build a timeline and playback control in the PWA.
+- [x] Transfer recording segments from Pi to Mac with integrity metadata.
+- [x] Index segment start/end times and availability.
+- [x] Build a timeline and playback control in the PWA.
+- [x] Provide both a table/list and a day-based visual time scrubber with private preview thumbnails.
 - [ ] Delete expired recordings automatically after 24 hours.
 - [ ] Support confirmed administrator deletion of selected segments before expiry and verify removal from storage and the timeline index.
-- [ ] Add disk high-water protection so retention failure cannot fill the Mac.
+- [x] Add disk high-water protection so retention failure cannot fill the Mac.
 - [ ] Provide explicit selected-time-range export before expiry without automatic Photos or cloud copying.
 - [ ] Test time zones, restart recovery, partial files, and clock drift.
 

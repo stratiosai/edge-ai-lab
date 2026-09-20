@@ -53,6 +53,7 @@ def test_protected_routes_require_authentication(tmp_path: Path) -> None:
     assert client.get("/api/health").status_code == 401
     assert client.get("/api/segments").status_code == 401
     assert client.get("/api/live").status_code == 401
+    assert client.get("/api/segments/not-a-real-segment/thumbnail").status_code == 401
 
 
 def test_login_session_logout_and_security_headers(tmp_path: Path) -> None:
@@ -88,6 +89,7 @@ def test_ingest_timeline_media_export_and_verified_delete(tmp_path: Path) -> Non
     assert [item["id"] for item in timeline] == [segment_id]
     assert timeline[0]["sha256"] == hashlib.sha256(body).hexdigest()
     assert client.get(f"/api/segments/{segment_id}/media").content == body
+    assert client.get(f"/api/segments/{segment_id}/thumbnail").status_code == 404
     export = client.get(f"/api/segments/{segment_id}/export")
     assert export.content == body
     assert "attachment" in export.headers["content-disposition"]

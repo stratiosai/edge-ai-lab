@@ -268,6 +268,18 @@ def create_app(config: CameraServerConfig | None = None) -> FastAPI:
         path, _ = segment_or_404(segment_id)
         return FileResponse(path, media_type="video/mp4")
 
+    @app.get("/api/segments/{segment_id}/thumbnail")
+    def thumbnail(
+        segment_id: str,
+        _user: Annotated[dict[str, int | str], Depends(session_user)],
+    ) -> FileResponse:
+        thumbnail_path = archive.thumbnail_path(segment_id)
+        if thumbnail_path is not None and not thumbnail_path.is_file():
+            archive.create_thumbnail(segment_id)
+        if thumbnail_path is None or not thumbnail_path.is_file():
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+        return FileResponse(thumbnail_path, media_type="image/jpeg")
+
     @app.get("/api/segments/{segment_id}/export")
     def export(
         segment_id: str,

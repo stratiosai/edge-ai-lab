@@ -1,4 +1,5 @@
 let csrfToken = null;
+let allSegments = [];
 
 async function api(path, options = {}) {
   const headers = {...(options.headers || {})};
@@ -61,6 +62,9 @@ async function loadTimeline() {
   const response = await api("/api/segments");
   if (!response.ok) return;
   const {segments} = await response.json();
+  allSegments = segments;
+  populateScrubber();
+  document.querySelector("#recordings-summary").textContent = `${segments.length} recording${segments.length === 1 ? "" : "s"} available locally`;
   const timeline = document.querySelector("#timeline");
   timeline.replaceChildren();
   if (!segments.length) {
@@ -81,6 +85,62 @@ async function loadTimeline() {
   }
 }
 
+function localDay(segment) {
+  return new Date(segment.started_at * 1000).toLocaleDateString(undefined, {weekday: "short", month: "short", day: "numeric"});
+}
+
+function segmentsForSelectedDay() {
+  const day = document.querySelector("#recording-day").value;
+  return allSegments.filter(segment => localDay(segment) === day).sort((a, b) => a.started_at - b.started_at);
+}
+
+function renderScrubberSelection() {
+  const slider = document.querySelector("#recording-slider");
+  const selections = segmentsForSelectedDay();
+  const segment = selections[Number(slider.value)];
+  const image = document.querySelector("#scrubber-thumbnail");
+  const empty = document.querySelector("#scrubber-empty");
+  const time = document.querySelector("#scrubber-time");
+  const position = document.querySelector("#scrubber-position");
+  const play = document.querySelector("#scrubber-play");
+  if (!segment) {
+    image.removeAttribute("src"); image.hidden = true; empty.hidden = false;
+    time.textContent = "No recordings for this day"; position.textContent = ""; play.href = "#";
+    return;
+  }
+  const date = new Date(segment.started_at * 1000);
+  time.textContent = date.toLocaleString();
+  position.textContent = `${Number(slider.value) + 1} of ${selections.length}`;
+  play.href = `/api/segments/${segment.id}/media`;
+  image.hidden = false; empty.hidden = true;
+  image.src = `/api/segments/${segment.id}/thumbnail?cache=${segment.id}`;
+  image.onerror = () => { image.hidden = true; empty.hidden = false; };
+}
+
+function populateScrubber() {
+  const daySelect = document.querySelector("#recording-day");
+  const current = daySelect.value;
+  const days = [...new Set(allSegments.map(localDay))];
+  daySelect.replaceChildren(...days.map(day => new Option(day, day)));
+  if (days.includes(current)) daySelect.value = current;
+  const selections = segmentsForSelectedDay();
+  const slider = document.querySelector("#recording-slider");
+  slider.max = Math.max(0, selections.length - 1);
+  slider.value = Math.min(Number(slider.value), Number(slider.max));
+  renderScrubberSelection();
+}
+
+function setRecordingView(view) {
+  const isList = view === "list";
+  document.querySelector("#list-view").hidden = !isList;
+  document.querySelector("#scrubber-view").hidden = isList;
+  for (const button of document.querySelectorAll(".view-tab")) {
+    const selected = button.id === `${view}-view-button`;
+    button.classList.toggle("active", selected); button.setAttribute("aria-selected", String(selected));
+  }
+  if (!isList) renderScrubberSelection();
+}
+
 document.querySelector("#login-form").addEventListener("submit", async event => {
   event.preventDefault();
   const response = await api("/api/login", {method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({username:document.querySelector("#username").value,password:document.querySelector("#password").value})});
@@ -91,6 +151,10 @@ document.querySelector("#login-form").addEventListener("submit", async event => 
 document.querySelector("#logout").addEventListener("click", async () => { await api("/api/logout", {method:"POST"}); csrfToken = null; showLogin(); });
 document.querySelector("#logout-all").addEventListener("click", logoutAllDevices);
 document.querySelector("#refresh").addEventListener("click", () => Promise.all([loadHealth(), loadTimeline()]));
+document.querySelector("#list-view-button").addEventListener("click", () => setRecordingView("list"));
+document.querySelector("#scrubber-view-button").addEventListener("click", () => setRecordingView("scrubber"));
+document.querySelector("#recording-day").addEventListener("change", () => { document.querySelector("#recording-slider").value = 0; populateScrubber(); });
+document.querySelector("#recording-slider").addEventListener("input", renderScrubberSelection);
 
 (async () => {
   const response = await api("/api/session");

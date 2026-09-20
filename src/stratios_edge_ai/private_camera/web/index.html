@@ -39,9 +39,22 @@
           <div class="section-title"><h2>Live</h2><span>720p target</span></div>
           <div class="video-shell"><img id="live-view" alt="Authenticated live camera view"></div>
         </article>
-        <article class="card">
-          <div class="section-title"><h2>Last 24 hours</h2><button id="refresh" class="secondary">Refresh</button></div>
-          <div id="timeline" class="timeline"></div>
+        <article class="card recordings-card">
+          <div class="section-title"><div><h2>Last 24 hours</h2><p id="recordings-summary" class="muted">Loading recordings…</p></div><button id="refresh" class="secondary">Refresh</button></div>
+          <div class="view-tabs" role="tablist" aria-label="Recording views">
+            <button id="list-view-button" class="view-tab active" type="button" role="tab" aria-selected="true">List</button>
+            <button id="scrubber-view-button" class="view-tab" type="button" role="tab" aria-selected="false">Day scrubber</button>
+          </div>
+          <div id="list-view" role="tabpanel"><div id="timeline" class="timeline"></div></div>
+          <div id="scrubber-view" role="tabpanel" hidden>
+            <div class="scrubber-controls">
+              <label for="recording-day">Day<select id="recording-day" aria-label="Recording day"></select></label>
+              <output id="scrubber-time" for="recording-slider">Select a recording</output>
+            </div>
+            <div class="scrubber-preview"><img id="scrubber-thumbnail" alt="Selected recording preview"><div id="scrubber-empty" class="muted">A preview will appear when a thumbnail is ready.</div></div>
+            <input id="recording-slider" type="range" min="0" max="0" value="0" step="1" aria-label="Recording time">
+            <div class="scrubber-actions"><a id="scrubber-play" class="button-link" href="#">Play recording</a><span id="scrubber-position" class="muted"></span></div>
+          </div>
         </article>
       </section>
     </main>

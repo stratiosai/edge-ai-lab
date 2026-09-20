@@ -22,7 +22,18 @@ button:hover { background:#007bb9; } button.secondary { background:#f8fafb; colo
 .video-shell { aspect-ratio:16/9; background:#091015; border-radius:12px; overflow:hidden; display:grid; place-items:center; }
 .video-shell img { display:block; width:100%; height:100%; object-fit:contain; }
 .timeline { display:grid; gap:10px; }
+.recordings-card { margin-top:18px; }
+.view-tabs { display:flex; gap:8px; border-bottom:1px solid #e5eaed; margin:18px 0 14px; }
+button.view-tab { border-radius:9px 9px 0 0; background:transparent; color:#68727a; box-shadow:none; padding:10px 14px; }
+button.view-tab.active { background:#e7f5fc; color:#0078b9; }
+.scrubber-controls { display:flex; justify-content:space-between; align-items:end; gap:16px; margin-bottom:12px; }
+.scrubber-controls label { margin:0; font-size:.82rem; font-weight:700; }.scrubber-controls select { margin-top:5px; border:1px solid #d5dce0; border-radius:9px; background:#fff; color:#36383a; font:inherit; padding:8px; }
+.scrubber-controls output { color:#0078b9; font-weight:800; text-align:right; }
+.scrubber-preview { position:relative; aspect-ratio:16/7; overflow:hidden; border-radius:12px; background:#11191e; display:grid; place-items:center; }
+.scrubber-preview img { width:100%; height:100%; object-fit:cover; }.scrubber-preview .muted { padding:16px; text-align:center; color:#cbd5da; }
+#recording-slider { accent-color:#0089ce; margin:17px 0 8px; padding:0; }
+.scrubber-actions { display:flex; align-items:center; justify-content:space-between; gap:10px; }.button-link { display:inline-block; background:#0089ce; color:#fff; border-radius:10px; padding:10px 13px; font-size:.88rem; font-weight:800; text-decoration:none; }
 .segment { display:grid; grid-template-columns:1fr auto; gap:12px; padding:12px; border-radius:12px; background:#f8fafb; border:1px solid #edf0f1; }
 .segment-actions { display:flex; gap:8px; flex-wrap:wrap; }.segment-actions a,.segment-actions button { font-size:.82rem; padding:8px 10px; }
 .segment-actions a { color:#0078b9; align-self:center; font-weight:700; }
-@media (max-width:700px) { .status-grid { grid-template-columns:1fr; } main { padding-top:18px; } header { align-items:flex-start; } .header-actions { justify-content:flex-start; } }
+@media (max-width:700px) { .status-grid { grid-template-columns:1fr; } main { padding-top:18px; } header { align-items:flex-start; } .header-actions { justify-content:flex-start; } .scrubber-controls { align-items:stretch; flex-direction:column; gap:8px; }.scrubber-controls output { text-align:left; } }

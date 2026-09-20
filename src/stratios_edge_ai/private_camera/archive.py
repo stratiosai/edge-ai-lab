@@ -5,6 +5,8 @@ from __future__ import annotations
 import hashlib
 import hmac
 import os
+import shutil
+import subprocess
 import time
 import uuid
 from pathlib import Path
@@ -95,7 +97,58 @@ class Archive:
         except Exception:
             final_path.unlink(missing_ok=True)
             raise
+        # A thumbnail is a convenience for the authenticated timeline, never a
+        # second source of truth.  If a segment is partial or ffmpeg is not
+        # available, keep the valid recording and let the UI show a fallback.
+        self.create_thumbnail(segment_id)
         return segment_id, True
+
+    def thumbnail_path(self, segment_id: str) -> Path | None:
+        resolved = self.resolve(segment_id)
+        if resolved is None:
+            return None
+        media_path, _ = resolved
+        thumbnail = (self.directory / "thumbnails" / f"{media_path.stem}.jpg").resolve()
+        thumbnail_directory = (self.directory / "thumbnails").resolve()
+        if thumbnail.parent != thumbnail_directory:
+            raise RuntimeError("thumbnail escaped archive directory")
+        return thumbnail
+
+    def create_thumbnail(self, segment_id: str) -> bool:
+        resolved = self.resolve(segment_id)
+        thumbnail = self.thumbnail_path(segment_id)
+        if resolved is None or thumbnail is None:
+            return False
+        media_path, _ = resolved
+        thumbnail.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
+        temporary = thumbnail.with_suffix(".partial.jpg")
+        try:
+            ffmpeg = shutil.which("ffmpeg")
+            if ffmpeg is None:
+                for candidate in (Path("/opt/homebrew/bin/ffmpeg"), Path("/usr/local/bin/ffmpeg")):
+                    if candidate.is_file() and os.access(candidate, os.X_OK):
+                        ffmpeg = str(candidate)
+                        break
+            if ffmpeg is None:
+                return False
+            subprocess.run(
+                [
+                    ffmpeg, "-nostdin", "-loglevel", "error", "-y", "-ss", "1",
+                    "-i", str(media_path), "-frames:v", "1", "-vf", "scale=480:-2",
+                    str(temporary),
+                ],
+                check=True,
+                stdin=subprocess.DEVNULL,
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+                timeout=20,
+            )
+            temporary.chmod(0o600)
+            temporary.replace(thumbnail)
+            return True
+        except (FileNotFoundError, subprocess.CalledProcessError, subprocess.TimeoutExpired):
+            temporary.unlink(missing_ok=True)
+            return False
 
     def list_segments(self, since: int, until: int) -> list[dict[str, int | str]]:
         with self.database.connect() as connection:
@@ -127,7 +180,14 @@ class Archive:
         if resolved is None:
             return False
         path, _ = resolved
+        thumbnail = self.thumbnail_path(segment_id)
         path.unlink(missing_ok=True)
+        if thumbnail is not None:
+            thumbnail.unlink(missing_ok=True)
+            try:
+                thumbnail.parent.rmdir()
+            except OSError:
+                pass
         with self.database.connect() as connection:
             connection.execute("DELETE FROM segments WHERE id = ?", (segment_id,))
         return True

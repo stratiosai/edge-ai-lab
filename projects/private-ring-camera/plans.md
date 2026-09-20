@@ -26,6 +26,7 @@ This initiative builds a private, local-first camera system using the existing R
 - [x] The Mac display may sleep, but the plugged-in Mac remains awake while providing archive, API, and web services.
 - [x] The Pi outage buffer defaults to one hour with a 2 GB hard ceiling; both are configurable, and the oldest local segments are removed first.
 - [x] Version 1 has one administrator account; the data model must permit separate household accounts later.
+- [x] Store the Mac archive outside Git and iCloud at `~/Library/Application Support/StratiosAI/edge-ai-camera/archive/` by default; allow a configurable external-storage path later.
 - [x] Person and vehicle detection begin after the Version 1 media path works end to end.
 
 ## Definition of Version 1 success
@@ -69,11 +70,12 @@ Phone/laptop PWA <---- authenticated API ---+
 
 ### Mac responsibilities
 
-- Store the authoritative rolling 24-hour media archive.
+- Store the authoritative rolling 24-hour media archive in the private application-data directory `~/Library/Application Support/StratiosAI/edge-ai-camera/archive/` by default.
 - Run the application API, authentication, timeline index, and web UI initially.
 - Enforce retention and expose only authenticated media routes.
 - Receive buffered segments when the Pi reconnects.
 - Remain awake while plugged into power and operating the camera system; display sleep is allowed.
+- Permit a configured external-storage path later without changing media identifiers or API behavior.
 
 ### Phone and laptop responsibilities
 
@@ -237,7 +239,7 @@ Record these for each milestone on the real Pi:
 - [x] Account model: one Version 1 administrator, with a schema that supports multiple household accounts later.
 - [x] Media profile: 1080p/15 FPS H.264 recording at approximately 2–3 Mbps; 720p live view targeting less than two seconds of delay.
 - [x] Pi outage buffer: configurable, defaulting to one hour with a 2 GB hard ceiling and oldest-first removal.
-- [ ] Exact Mac archive directory or external storage volume.
+- [x] Mac archive: private, outside Git and iCloud, defaulting to `~/Library/Application Support/StratiosAI/edge-ai-camera/archive/`; path configurable later.
 - [x] Mac power behavior: display sleep allowed; system remains awake while plugged in and archiving.
 - [x] Recording mode: continuous short segments with motion markers on the timeline.
 - [ ] Which camera zones are allowed and which must be masked.

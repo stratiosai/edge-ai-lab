@@ -129,6 +129,12 @@ Create these implementation folders only as their milestone begins; do not add e
 
 ## Sequential delivery checklist
 
+### Current milestone
+
+**Phase 4 — outage recovery and Version 1 acceptance.**
+
+**Active subtask:** collect a real 24-hour archive window and verify automatic expiry. The live service is recording continuously, but this remains unchecked until the full elapsed window is observed. The next acceptance work after that is the explicitly controlled Mac-shutdown, Wi-Fi-recovery, and reboot-order testing; Phase 5 person/vehicle intelligence has not begun.
+
 ### Phase 0 — prove the hardware
 
 - [x] Identify the Pi as a Raspberry Pi 5 with 4 GB RAM.

@@ -49,7 +49,7 @@ Version 1 is complete only when all of these are demonstrated from a real phone 
 - [ ] Manually delete a selected segment and verify its media and timeline metadata are gone.
 - [ ] Export a selected time range and verify no automatic cloud or Photos copy occurs.
 - [ ] Confirm recordings expire automatically after 24 hours.
-- [ ] Reboot the Pi and recover without manually restarting the application.
+- [x] Reboot the Pi and recover without manually restarting the application. (On 2026-09-20, the Pi returned after a 44-second reboot with user lingering and all three enabled services active; a post-reboot segment then reached the Mac archive.)
 - [ ] Disconnect the Mac temporarily, continue buffering on the Pi, then reconcile after reconnection.
 - [x] Confirm an unauthenticated device cannot view the stream or recordings. (Live and segment API requests without a session returned HTTP 401 against the deployed HTTPS service on 2026-09-20.)
 
@@ -151,7 +151,7 @@ Create these implementation folders only as their milestone begins; do not add e
 - [x] Segment recordings into small files so interruption does not corrupt a full day.
 - [x] Add a configurable Pi circular buffer defaulting to one hour with a 2 GB hard ceiling.
 - [x] Add health and performance telemetry without logging private frames.
-- [ ] Run capture under `systemd` with restart limits and useful logs. (Units are staged but disabled because user lingering is not enabled; detached manual services keep the test capture running until an administrator runs `loginctl enable-linger stratiosai`.)
+- [x] Run capture under `systemd` with restart limits and useful logs. (User lingering was enabled and capture, live, and uploader units were enabled and verified active on 2026-09-20.)
 
 **Gate:** the Pi streams and records for two hours without unbounded memory, disk, or temperature growth.
 

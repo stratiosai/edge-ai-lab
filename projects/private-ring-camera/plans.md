@@ -184,7 +184,8 @@ Create these implementation folders only as their milestone begins; do not add e
 - [x] Support confirmed administrator deletion of selected segments before expiry and verify removal from storage and the timeline index. (A real selected segment was browser-confirmed and verified absent from the deployed archive and index on 2026-09-20.)
 - [x] Add disk high-water protection so retention failure cannot fill the Mac.
 - [x] Provide explicit selected-time-range export before expiry without automatic Photos or cloud copying. (Deployed UI acceptance verified a selected local ZIP export with a manifest on 2026-09-20.)
-- [ ] Test time zones, restart recovery, partial files, and clock drift.
+- [x] Test restart recovery, partial files, and clock drift. (The restart-retention, Pi partial-segment retry, and timeline clock-skew tests pass in the local suite on 2026-09-21.)
+- [ ] Test time zones across the UI, archive index, and playback boundaries.
 
 **Gate:** a phone can play a chosen time from the last 24 hours and expired content is verifiably removed.
 

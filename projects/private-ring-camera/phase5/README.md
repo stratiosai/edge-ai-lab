@@ -138,7 +138,8 @@ notification side effects until explicitly wired into a service.
 it replays one selected archived MP4 through the pipeline and writes event JSON
 to a caller-selected private directory. It does not modify recordings or send
 events over the network, making it suitable for accuracy review before an
-always-on Pi service.
+always-on Pi service. Pass the archive's `--segment-id` when available so the
+resulting event records remain source-linked for later thumbnail/clip ingest.
 
 [`render_proof_video.py`](render_proof_video.py) creates a short H.264 review
 clip from a selected private segment with detector boxes, confidence, stable

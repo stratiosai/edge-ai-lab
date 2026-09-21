@@ -25,6 +25,7 @@ def replay(
     output: Path,
     *,
     started_at: int,
+    segment_id: str | None = None,
     sample_fps: float = 2.0,
     confidence: float = 0.45,
 ) -> dict[str, object]:
@@ -52,7 +53,7 @@ def replay(
                 break
             if frame_index % stride == 0:
                 timestamp = started_at + round(frame_index / source_fps)
-                result = pipeline.process(frame, occurred_at=timestamp)
+                result = pipeline.process(frame, occurred_at=timestamp, segment_id=segment_id)
                 event_records.extend(event.__dict__ for event in result.events)
             frame_index += 1
     finally:
@@ -76,6 +77,7 @@ def main() -> None:
     parser.add_argument("segment", type=Path)
     parser.add_argument("model", type=Path)
     parser.add_argument("--started-at", type=int, required=True)
+    parser.add_argument("--segment-id")
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--sample-fps", type=float, default=2.0)
     parser.add_argument("--confidence", type=float, default=0.45)

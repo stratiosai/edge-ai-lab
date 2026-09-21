@@ -105,6 +105,9 @@ changes the source recording.
 The authenticated `/api/events/{event_id}/clip` route similarly extracts a
 bounded MP4 review window from the referenced segment, clamped to that
 segment's start/end times and written with owner-only permissions.
+When a source segment is deleted or expires, its event rows and any derived
+thumbnail/clip files are removed in the same archive operation; no orphaned
+event metadata remains after retention.
 
 [`detector.py`](../../../src/stratios_edge_ai/private_camera/detector.py) is
 the Pi-safe ONNX Runtime adapter. It parses the exported NMS rows, normalizes

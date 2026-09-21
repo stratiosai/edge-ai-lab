@@ -375,6 +375,10 @@ class Archive:
             return False
         path, _ = resolved
         thumbnail = self.thumbnail_path(segment_id)
+        with self.database.connect() as connection:
+            event_rows = connection.execute(
+                "SELECT id FROM events WHERE segment_id = ?", (segment_id,)
+            ).fetchall()
         path.unlink(missing_ok=True)
         if thumbnail is not None:
             thumbnail.unlink(missing_ok=True)
@@ -382,7 +386,20 @@ class Archive:
                 thumbnail.parent.rmdir()
             except OSError:
                 pass
+        event_directory = (self.directory / "events").resolve()
+        for row in event_rows:
+            event_id = str(row["id"])
+            for suffix in (".jpg", ".mp4"):
+                event_path = (event_directory / f"{event_id}{suffix}").resolve()
+                if event_path.parent != event_directory:
+                    raise RuntimeError("event media escaped archive directory")
+                event_path.unlink(missing_ok=True)
+        try:
+            event_directory.rmdir()
+        except OSError:
+            pass
         with self.database.connect() as connection:
+            connection.execute("DELETE FROM events WHERE segment_id = ?", (segment_id,))
             connection.execute("DELETE FROM segments WHERE id = ?", (segment_id,))
         return True
 

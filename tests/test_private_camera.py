@@ -171,6 +171,26 @@ def test_event_ingest_is_idempotent_and_authenticated_for_readback(tmp_path: Pat
     assert client.get("/api/events/evt-1/clip").status_code == 404
 
 
+def test_deleting_source_segment_removes_its_events(tmp_path: Path) -> None:
+    client = make_client(tmp_path)
+    csrf = login(client)
+    now = int(time.time())
+    segment_id = ingest(client, started_at=now - 60, ended_at=now, body=b"source")
+    event = {
+        "event_id": "evt-source",
+        "occurred_at": now - 30,
+        "track_id": 1,
+        "label": "car",
+        "confidence": 0.8,
+        "zone": "driveway",
+        "count": 1,
+        "segment_id": segment_id,
+    }
+    assert client.post("/api/ingest/event", json=event, headers={"X-Ingest-Token": INGEST_TOKEN}).status_code == 200
+    assert client.delete(f"/api/segments/{segment_id}", headers={"X-CSRF-Token": csrf}).status_code == 200
+    assert client.get("/api/events").json()["events"] == []
+
+
 def test_event_ingest_rejects_invalid_metadata(tmp_path: Path) -> None:
     client = make_client(tmp_path)
     response = client.post(

@@ -77,8 +77,8 @@ Capability labels:
   - [x] Phase 0: camera detected and real still/video captured.
   - [x] Phase 1: reliable Pi streaming, recording, buffering, and health service.
   - [x] Phase 2: authenticated phone/laptop web application.
-  - [ ] Phase 3: Mac-hosted rolling 24-hour archive and playback timeline.
-  - [ ] Phase 4: outage recovery and Version 1 acceptance.
+  - [x] Phase 3: Mac-hosted rolling 24-hour archive and playback timeline. (Core archive/playback gate passed; cross-timezone boundary verification remains a follow-up in the detailed plan.)
+  - [x] Phase 4: outage recovery and Version 1 acceptance.
   - [ ] Phase 5: person/vehicle detection, tracking, and counting.
   - [ ] Phase 6: notifications and VPN-only remote access.
 - [ ] **P041 Package arrival/removal `[A]`** — detect package state changes in a porch zone.

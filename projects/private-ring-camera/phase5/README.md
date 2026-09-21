@@ -110,6 +110,11 @@ the labeled-frame gate: same-class IoU matching, aggregate precision/recall,
 and duplicate-prediction counts. Feed it annotations from the controlled test
 area; synthetic unit tests do not prove camera accuracy.
 
+Run [`evaluate_accuracy.py`](evaluate_accuracy.py) on a private manifest when
+frames are labeled. Keep that manifest, frames, model binaries, and JSON
+results outside Git. The command reports aggregate and per-frame counts so the
+day/night/weather gate can be reviewed before enabling a detector service.
+
 ## Reproducible run records
 
 Each run should keep a text manifest outside Git containing:

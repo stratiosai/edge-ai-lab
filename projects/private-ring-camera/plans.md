@@ -133,7 +133,7 @@ Create these implementation folders only as their milestone begins; do not add e
 
 **Phase 4 — outage recovery and Version 1 acceptance.**
 
-**Active subtask:** continue Phase 5 detector preparation while retaining the deferred 24-hour elapsed-retention and cross-timezone UI checks. Tailscale is installed and connected on the Mac, Pi, and operator phone; the camera services are reachable over the private Tailscale path and phone access was confirmed. Router UPnP/NAT-T hardening passed on 2026-09-21. Phase 5's detector candidates, motion-zone configuration, measurement manifest, Pi ONNX benchmarks, detector adapter, IoU tracker, crossing-line logic, and event metadata contract are documented under [`phase5/README.md`](phase5/README.md); labeled accuracy, live-service wiring, and UI rendering remain next.
+**Active subtask:** continue Phase 5 detector preparation while retaining the deferred 24-hour elapsed-retention and cross-timezone UI checks. Tailscale is installed and connected on the Mac, Pi, and operator phone; the camera services are reachable over the private Tailscale path and phone access was confirmed. Router UPnP/NAT-T hardening passed on 2026-09-21. Phase 5's detector candidates, motion-zone configuration, measurement manifest, Pi ONNX benchmarks, detector adapter, IoU tracker, crossing-line logic, event metadata contract, and labeled-accuracy CLI are documented under [`phase5/README.md`](phase5/README.md); real labeled accuracy, live-service wiring, and UI rendering remain next.
 
 ### Phase 0 — prove the hardware
 

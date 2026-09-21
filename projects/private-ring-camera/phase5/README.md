@@ -86,6 +86,13 @@ jitter deadband, and one `a-to-b`/`b-to-a` event per track. State can be reset
 when the IoU tracker expires a track, so a later re-entry is countable. This
 is event logic only; it is not yet connected to the live detector or UI.
 
+[`events.py`](../../../src/stratios_edge_ai/private_camera/events.py) defines
+the review metadata contract used by the eventual authenticated event view:
+class, confidence, zone, count, optional direction, source segment, thumbnail,
+and a bounded clip window. Pixel crops are clamped to the source frame and
+invalid confidence or clip ranges are rejected. Persistence, clip extraction,
+and UI display still require live detector wiring and measured accuracy.
+
 ## Reproducible run records
 
 Each run should keep a text manifest outside Git containing:

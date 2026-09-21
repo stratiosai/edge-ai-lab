@@ -159,6 +159,11 @@ JPEG review frames and writes a private `labels.json` template. Fill in each
 frame's condition and ground-truth `objects` before running the accuracy
 evaluator; an empty template is intentionally not an accuracy result.
 
+[`predict_manifest.py`](predict_manifest.py) writes a separate private
+`predictions.json` sidecar with model suggestions and normalized boxes. It is
+review assistance only; never copy its predictions into ground truth without
+checking the frame.
+
 Run [`evaluate_accuracy.py`](evaluate_accuracy.py) on a private manifest when
 frames are labeled. Keep that manifest, frames, model binaries, and JSON
 results outside Git. The command reports aggregate and per-frame counts so the

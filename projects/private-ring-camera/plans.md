@@ -5,7 +5,7 @@ This initiative builds a private, local-first camera system using the existing R
 ## Initiative status
 
 - **Roadmap capability:** `P040 Private Ring-style camera`
-- **Current phase:** Phases 1–3 running on the home LAN; retention, restart, and phone acceptance remain in progress
+- **Current phase:** Phase 5 detector preparation; Version 1 media, retention, outage recovery, and private Tailscale access are accepted, while cross-timezone UI verification and measured live-detection accuracy remain open
 - **Target network:** home LAN first; home VPN later
 - **Deployment principle:** no router port forwarding and no publicly exposed camera service
 - **Hardware upgrade policy:** prove a measured limit before buying a HAT or accelerator

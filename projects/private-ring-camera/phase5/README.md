@@ -80,6 +80,16 @@ duplicate predictions and single indoor condition are not an acceptance gate;
 day/night/weather/occlusion coverage and temporal duplicate-count evaluation
 remain required before enabling unattended detection.
 
+## Real-Pi guarded canary (2026-09-21)
+
+The Phase 5 dependencies were copied to the Pi with matching SHA-256 hashes,
+then one closed segment was copied to a temporary file and replayed locally
+with `yolo26n` at 1 FPS and a 0.45 confidence threshold. The no-upload run
+produced two `person` event suggestions at 0.567 and 0.491 confidence in the
+`controlled-test-area` zone. The source segment and the active systemd
+services were left untouched; the normal archive agent still does not pass
+`--enable-detector`.
+
 ## Tracking primitive
 
 [`tracking.py`](../../../src/stratios_edge_ai/private_camera/tracking.py)

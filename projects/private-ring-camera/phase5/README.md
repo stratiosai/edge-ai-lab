@@ -80,6 +80,12 @@ counted again when a genuinely new object enters. The implementation is
 camera-local and has no notification or actuator side effects; crossing-line
 direction and live-service integration are the next steps.
 
+[`crossing.py`](../../../src/stratios_edge_ai/private_camera/crossing.py) adds
+the next deterministic primitive: a normalized directed line, configurable
+jitter deadband, and one `a-to-b`/`b-to-a` event per track. State can be reset
+when the IoU tracker expires a track, so a later re-entry is countable. This
+is event logic only; it is not yet connected to the live detector or UI.
+
 ## Reproducible run records
 
 Each run should keep a text manifest outside Git containing:

@@ -63,6 +63,12 @@ establish counting accuracy.
 The repeatable runner is [`benchmark_onnx.py`](benchmark_onnx.py). Keep its
 JSON output and all model files in the private camera data directory, not Git.
 
+A five-minute sustained CPU run of `yolo26n` completed on the Pi on 2026-09-21
+(4,700 iterations): 14.1 FPS average, 63.8 ms median / 120.3 ms p95, 70.5°C
+reported at both endpoints, and `throttled=0x0`. The Pi capture, live, and
+archive-agent services remained active and its bounded buffer remained at two
+files. This validates a sustained speed/thermal baseline, not event accuracy.
+
 ## Reproducible run records
 
 Each run should keep a text manifest outside Git containing:

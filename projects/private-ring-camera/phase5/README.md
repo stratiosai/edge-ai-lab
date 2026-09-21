@@ -91,6 +91,11 @@ produced two `person` event suggestions at 0.567 and 0.491 confidence in the
 services were left untouched; the normal archive agent still does not pass
 `--enable-detector`.
 
+A second no-upload canary on the next closed segment produced zero events in a
+quiet scene, confirming that the default motion gate suppresses inference when
+there is no observed activity. These two canaries demonstrate guarded active
+and quiet behavior, not environmental accuracy or unattended acceptance.
+
 ## Tracking primitive
 
 [`tracking.py`](../../../src/stratios_edge_ai/private_camera/tracking.py)

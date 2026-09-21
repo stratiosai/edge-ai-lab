@@ -1,6 +1,9 @@
+import argparse
+
 import pytest
 
 from stratios_edge_ai.private_camera.crossing import CrossingDetector, CrossingLine
+from stratios_edge_ai.private_camera.pi_live import parse_crossing_line
 
 
 def test_crossing_line_emits_direction_once() -> None:
@@ -25,3 +28,11 @@ def test_deadband_avoids_jitter_and_forget_allows_reentry() -> None:
 def test_degenerate_line_is_rejected() -> None:
     with pytest.raises(ValueError):
         CrossingLine((0.5, 0.5), (0.5, 0.5))
+
+
+def test_live_overlay_crossing_line_parser_uses_normalized_coordinates() -> None:
+    line = parse_crossing_line("0.5,0,0.5,1")
+    assert line.a == (0.5, 0.0)
+    assert line.b == (0.5, 1.0)
+    with pytest.raises(argparse.ArgumentTypeError):
+        parse_crossing_line("0.5,0,1.2,1")

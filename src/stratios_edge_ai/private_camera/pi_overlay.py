@@ -9,6 +9,7 @@ from pathlib import Path
 import cv2
 import numpy as np
 
+from .crossing import CrossingDetector, CrossingLine
 from .detector import DetectorConfig, OnnxDetector
 from .motion import MotionGate, MotionZone
 from .overlay import render_overlay
@@ -30,6 +31,8 @@ class LiveOverlay:
         confidence: float = 0.45,
         motion_threshold: float = 5.0,
         privacy_masks: list[PrivacyMask] | None = None,
+        crossing_line: CrossingLine | None = None,
+        crossing_deadband: float = 0.0,
     ) -> None:
         if sample_fps <= 0:
             raise ValueError("overlay sample FPS must be positive")
@@ -44,6 +47,7 @@ class LiveOverlay:
             [zone],
             motion_gate=MotionGate([zone], threshold=motion_threshold),
             tracker=IoUTracker(min_hits=2),
+            crossing=(CrossingDetector(crossing_line, deadband=crossing_deadband) if crossing_line else None),
         )
 
     def __call__(self, jpeg: bytes) -> bytes:

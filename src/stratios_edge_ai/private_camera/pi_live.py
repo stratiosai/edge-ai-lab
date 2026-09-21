@@ -113,6 +113,20 @@ def make_handler(frames: LatestJpeg, token: str):
     return Handler
 
 
+def parse_crossing_line(value: str):
+    """Parse x1,y1,x2,y2 normalized coordinates for the guarded overlay."""
+
+    from .crossing import CrossingLine
+
+    try:
+        numbers = tuple(float(part.strip()) for part in value.split(","))
+    except ValueError as exc:
+        raise argparse.ArgumentTypeError("crossing line must be x1,y1,x2,y2") from exc
+    if len(numbers) != 4 or any(number < 0 or number > 1 for number in numbers):
+        raise argparse.ArgumentTypeError("crossing line coordinates must be four values in [0,1]")
+    return CrossingLine((numbers[0], numbers[1]), (numbers[2], numbers[3]))
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--fifo", type=Path, required=True)
@@ -127,6 +141,8 @@ def main() -> None:
     parser.add_argument("--overlay-confidence", type=float, default=0.45)
     parser.add_argument("--overlay-motion-threshold", type=float, default=5.0)
     parser.add_argument("--privacy-mask-file", type=Path)
+    parser.add_argument("--crossing-line", type=parse_crossing_line, metavar="X1,Y1,X2,Y2")
+    parser.add_argument("--crossing-deadband", type=float, default=0.0)
     args = parser.parse_args()
     token = args.token_file.read_text(encoding="utf-8").strip()
     if not token:
@@ -149,6 +165,8 @@ def main() -> None:
             confidence=args.overlay_confidence,
             motion_threshold=args.overlay_motion_threshold,
             privacy_masks=load_privacy_masks(args.privacy_mask_file) if args.privacy_mask_file else None,
+            crossing_line=args.crossing_line,
+            crossing_deadband=args.crossing_deadband,
         )
     frames = LatestJpeg(args.fifo, transform=transform)
     threading.Thread(target=frames.run, name="jpeg-reader", daemon=True).start()

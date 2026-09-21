@@ -52,16 +52,28 @@ class DetectionPipeline:
         if not active:
             tracks, _ = self.tracker.update([])
             return PipelineResult(tracks, [], False)
+        previous_track_ids = set(self.tracker.tracks)
         detections = self.detect(frame, self.zones)
         tracks, new_tracks = self.tracker.update(detections)
+        if self.crossing:
+            for expired_id in previous_track_ids - {track.track_id for track in tracks}:
+                self.crossing.forget(expired_id)
         events: list[EventSuggestion] = []
         zone = next((item.name for item in self.zones if item.enabled), "unknown")
-        for track in new_tracks:
-            direction = None
-            if self.crossing:
+        crossing_directions: dict[int, str] = {}
+        if self.crossing:
+            for track in tracks:
                 center = ((track.box[0] + track.box[2]) / 2, (track.box[1] + track.box[3]) / 2)
                 crossing_event = self.crossing.update(track.track_id, track.label, center)
-                direction = crossing_event.direction if crossing_event else None
+                if crossing_event:
+                    crossing_directions[track.track_id] = crossing_event.direction
+        event_tracks = list(new_tracks)
+        event_tracks.extend(
+            track for track in tracks
+            if track.track_id in crossing_directions and track not in event_tracks
+        )
+        for track in event_tracks:
+            direction = crossing_directions.get(track.track_id)
             count = sum(item.label == track.label for item in tracks)
             events.append(
                 EventSuggestion(

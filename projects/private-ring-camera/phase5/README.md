@@ -212,6 +212,10 @@ untouched. The normal `edge-camera-live` service does not pass these flags;
 the CLI refuses to enable them without an explicit model. The default
 `--overlay-motion-threshold 5.0` keeps inference motion-gated; a zero threshold
 is reserved for a controlled renderer canary, not unattended deployment.
+The guarded overlay can additionally accept `--crossing-line x1,y1,x2,y2`
+using normalized coordinates and `--crossing-deadband`; direction events are
+emitted once per tracked object. This is the car/vehicle-passing foundation:
+configure a driveway/road motion zone and line only after real accuracy review.
 
 [`render_proof_video.py`](render_proof_video.py) creates a short H.264 review
 clip from a selected private segment with detector boxes, confidence, stable

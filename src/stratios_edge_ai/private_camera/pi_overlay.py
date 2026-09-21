@@ -21,7 +21,14 @@ LOG = logging.getLogger("edge-camera-pi-overlay")
 class LiveOverlay:
     """Transform JPEG frames with sampled detector boxes and stable track IDs."""
 
-    def __init__(self, model: Path, *, sample_fps: float = 2.0, confidence: float = 0.45) -> None:
+    def __init__(
+        self,
+        model: Path,
+        *,
+        sample_fps: float = 2.0,
+        confidence: float = 0.45,
+        motion_threshold: float = 5.0,
+    ) -> None:
         if sample_fps <= 0:
             raise ValueError("overlay sample FPS must be positive")
         self.sample_interval = 1.0 / sample_fps
@@ -32,7 +39,7 @@ class LiveOverlay:
         self.pipeline = DetectionPipeline(
             detector.detect,
             [zone],
-            motion_gate=MotionGate([zone], threshold=5.0),
+            motion_gate=MotionGate([zone], threshold=motion_threshold),
             tracker=IoUTracker(min_hits=2),
         )
 

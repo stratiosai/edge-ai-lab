@@ -153,7 +153,9 @@ The Pi MJPEG relay also has a separate live-only overlay gate. Passing
 `--enable-overlay --overlay-model /path/to/model.onnx` draws sampled boxes,
 track IDs, and counts on the browser stream while leaving archived MP4s
 untouched. The normal `edge-camera-live` service does not pass these flags;
-the CLI refuses to enable overlays without an explicit model.
+the CLI refuses to enable them without an explicit model. The default
+`--overlay-motion-threshold 5.0` keeps inference motion-gated; a zero threshold
+is reserved for a controlled renderer canary, not unattended deployment.
 
 [`render_proof_video.py`](render_proof_video.py) creates a short H.264 review
 clip from a selected private segment with detector boxes, confidence, stable

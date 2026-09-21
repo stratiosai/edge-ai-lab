@@ -203,7 +203,7 @@ Create these implementation folders only as their milestone begins; do not add e
 ### Phase 5 — person and vehicle intelligence
 
 - [ ] Start with motion zones to avoid continuous inference.
-- [ ] Benchmark at least two small person/vehicle detectors on the actual Pi.
+- [x] Benchmark at least two small person/vehicle detectors on the actual Pi. (ONNX Runtime CPU baselines at 320px on 2026-09-21: `yolo26n` ~14.2 FPS median 64.0 ms / p95 103.2 ms; `yolo26s` ~3.6 FPS median 274.3 ms / p95 307.1 ms, with Pi temperature ≤65.6°C and `throttled=0x0`. Accuracy and five-minute sustained-run measurements remain.)
 - [ ] Track objects temporarily to avoid counting the same object in every frame.
 - [ ] Add configurable crossing lines and approach/departure direction.
 - [ ] Add event thumbnails, clips, class, confidence, zone, and count.

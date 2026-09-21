@@ -52,6 +52,17 @@ median / 8.07 ms p95 over 10 iterations; `yolo26s` measured 12.06 ms median /
 both models still require a real Pi benchmark with thermal and throttling
 measurements before any detector is deployed.
 
+The first real Pi CPU benchmark completed on 2026-09-21 using a user-owned
+virtualenv with ONNX Runtime and a frame decoded from an active Pi camera
+segment. At 320px input, `yolo26n` measured 64.0 ms median / 103.2 ms p95
+(about 14.2 FPS); `yolo26s` measured 274.3 ms median / 307.1 ms p95 (about
+3.6 FPS). The Pi reached 65.6°C with `throttled=0x0`. These are latency
+baselines only: the scene contained a person and no vehicles, so they do not
+establish counting accuracy.
+
+The repeatable runner is [`benchmark_onnx.py`](benchmark_onnx.py). Keep its
+JSON output and all model files in the private camera data directory, not Git.
+
 ## Reproducible run records
 
 Each run should keep a text manifest outside Git containing:

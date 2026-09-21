@@ -32,6 +32,10 @@ class PiAgentConfig:
     # margin, otherwise an in-progress file has no completed MP4 index yet.
     closed_file_age_seconds: int = 75
     motion_threshold: float = 0.035
+    detector_model: Path | None = None
+    detector_enabled: bool = False
+    detector_sample_fps: float = 2.0
+    detector_confidence: float = 0.45
 
     def token(self) -> str:
         token = self.ingest_token_file.read_text(encoding="utf-8").strip()
@@ -129,6 +133,10 @@ def post_bytes(
 
 
 def upload_segment(config: PiAgentConfig, path: Path) -> bool:
+    return bool(upload_segment_response(config, path).get("status") == "ok")
+
+
+def upload_segment_response(config: PiAgentConfig, path: Path) -> dict[str, object]:
     started_at, ended_at = segment_times(path)
     motion_headers: dict[str, str] = {}
     try:
@@ -141,7 +149,7 @@ def upload_segment(config: PiAgentConfig, path: Path) -> bool:
         # Motion metadata guides review only. A missing ffmpeg binary or a
         # malformed analysis decode must never prevent continuous archival.
         LOG.warning("motion analysis skipped for %s: %s", path.name, exc)
-    response = post_bytes(
+    return post_bytes(
         f"{config.server_url.rstrip('/')}/api/ingest/segment",
         config.token(),
         path.read_bytes(),
@@ -155,7 +163,6 @@ def upload_segment(config: PiAgentConfig, path: Path) -> bool:
         },
         config.ca_file,
     )
-    return response.get("status") == "ok"
 
 
 def camera_health(config: PiAgentConfig) -> dict[str, object]:
@@ -246,7 +253,29 @@ def run_once(config: PiAgentConfig) -> None:
 
     for path in closed_segments(config):
         try:
-            if upload_segment(config, path):
+            if config.detector_enabled and config.detector_model:
+                response = upload_segment_response(config, path)
+                archived = response.get("status") == "ok"
+                segment_id = response.get("segment_id")
+                if archived and isinstance(segment_id, str):
+                    try:
+                        from .pi_detector import analyze_segment, post_events
+
+                        events = analyze_segment(
+                            path,
+                            config.detector_model,
+                            started_at=segment_times(path)[0],
+                            segment_id=segment_id,
+                            sample_fps=config.detector_sample_fps,
+                            confidence=config.detector_confidence,
+                        )
+                        LOG.info("detector produced %d events for %s", len(events), path.name)
+                        post_events(config, events)
+                    except (OSError, ValueError, RuntimeError, subprocess.SubprocessError) as exc:
+                        LOG.warning("optional detector skipped for %s: %s", path.name, exc)
+            else:
+                archived = upload_segment(config, path)
+            if archived:
                 path.unlink()
                 LOG.info("archived and removed local segment: %s", path.name)
         except (ValueError, subprocess.SubprocessError) as exc:
@@ -271,9 +300,24 @@ def main() -> None:
     )
     parser.add_argument("--once", action="store_true")
     parser.add_argument("--ca-file", type=Path)
+    parser.add_argument("--detector-model", type=Path)
+    parser.add_argument("--enable-detector", action="store_true")
+    parser.add_argument("--detector-sample-fps", type=float, default=2.0)
+    parser.add_argument("--detector-confidence", type=float, default=0.45)
     args = parser.parse_args()
+    if args.enable_detector and args.detector_model is None:
+        parser.error("--enable-detector requires --detector-model")
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
-    config = PiAgentConfig(args.buffer_dir, args.server_url, args.ingest_token_file, args.ca_file)
+    config = PiAgentConfig(
+        buffer_dir=args.buffer_dir,
+        server_url=args.server_url,
+        ingest_token_file=args.ingest_token_file,
+        ca_file=args.ca_file,
+        detector_model=args.detector_model,
+        detector_enabled=args.enable_detector,
+        detector_sample_fps=args.detector_sample_fps,
+        detector_confidence=args.detector_confidence,
+    )
     if args.once:
         run_once(config)
         return

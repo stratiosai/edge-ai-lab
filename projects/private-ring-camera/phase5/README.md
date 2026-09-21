@@ -141,6 +141,14 @@ events over the network, making it suitable for accuracy review before an
 always-on Pi service. Pass the archive's `--segment-id` when available so the
 resulting event records remain source-linked for later thumbnail/clip ingest.
 
+The Pi archive agent now has a guarded live hook. It remains disabled unless
+both `--enable-detector` and `--detector-model /path/to/model.onnx` are passed;
+when enabled, it analyzes each closed segment after archival and submits only
+source-linked review events. The normal systemd service does not pass either
+flag, so this hook must not be enabled until the labeled accuracy and
+environment checks below are accepted. It never sends notifications and never
+rewrites the original recording.
+
 [`render_proof_video.py`](render_proof_video.py) creates a short H.264 review
 clip from a selected private segment with detector boxes, confidence, stable
 track IDs, counts, and zone text. The proof clip is generated outside Git;

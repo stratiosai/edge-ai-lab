@@ -199,6 +199,16 @@ frames are labeled. Keep that manifest, frames, model binaries, and JSON
 results outside Git. The command reports aggregate and per-frame counts so the
 day/night/weather gate can be reviewed before enabling a detector service.
 
+[`evaluate_environment.py`](evaluate_environment.py) is the acceptance wrapper:
+it requires separate labeled manifests for daylight, darkness, rain, glare,
+shadows, and occlusion, reports each condition independently, and exits with a
+non-zero status unless every condition meets the configured precision, recall,
+and duplicate limits. A controlled-indoor manifest alone is intentionally
+rejected as incomplete. The wrapper was exercised against the current sample
+on 2026-09-21 and exited with status 2, naming the missing darkness, rain,
+glare, shadows, and occlusion manifests; it cannot silently promote a
+single-condition sample to environmental acceptance.
+
 ## Reproducible run records
 
 Each run should keep a text manifest outside Git containing:

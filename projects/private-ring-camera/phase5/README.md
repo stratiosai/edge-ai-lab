@@ -104,6 +104,9 @@ the Pi-safe ONNX Runtime adapter. It parses the exported NMS rows, normalizes
 boxes, filters target classes/confidence, and applies enabled motion zones
 before handing detections to the tracker. It has no default camera loop or
 network side effect; deployment remains gated on labeled accuracy checks.
+With `emit_unknown` enabled, weak or unmapped rows are retained as `unknown`
+instead of being assigned a person/vehicle class; unknowns are excluded from
+counts until reviewed.
 
 [`metrics.py`](../../../src/stratios_edge_ai/private_camera/metrics.py) provides
 the labeled-frame gate: same-class IoU matching, aggregate precision/recall,

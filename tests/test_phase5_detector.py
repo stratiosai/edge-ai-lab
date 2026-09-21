@@ -23,3 +23,17 @@ def test_detector_config_and_zone_validation() -> None:
     rows = np.array([[160, 100, 300, 300, 0.9, 2]], dtype=np.float32)
     detections = parse_nms_output(rows, input_size=320, confidence_threshold=0.45)
     assert zone.contains_center(detections[0].box) is False
+
+
+def test_weak_or_unmapped_detection_can_be_retained_as_unknown() -> None:
+    rows = np.array([[10, 10, 100, 100, 0.3, 99]], dtype=np.float32)
+    assert parse_nms_output(rows, input_size=320, confidence_threshold=0.45) == []
+    detections = parse_nms_output(
+        rows,
+        input_size=320,
+        confidence_threshold=0.45,
+        unknown_threshold=0.2,
+        emit_unknown=True,
+    )
+    assert len(detections) == 1
+    assert detections[0].label == "unknown"

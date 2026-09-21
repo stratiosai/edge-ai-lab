@@ -24,6 +24,8 @@ COCO_TARGET_CLASSES = {0: "person", 2: "car", 3: "motorcycle", 5: "bus", 7: "tru
 class DetectorConfig:
     input_size: int = 320
     confidence_threshold: float = 0.45
+    unknown_threshold: float = 0.20
+    emit_unknown: bool = False
     target_classes: dict[int, str] | None = None
 
     def __post_init__(self) -> None:
@@ -31,6 +33,8 @@ class DetectorConfig:
             raise ValueError("input size must be a positive multiple of 32")
         if not 0.0 <= self.confidence_threshold <= 1.0:
             raise ValueError("confidence threshold must be between 0 and 1")
+        if not 0.0 <= self.unknown_threshold <= self.confidence_threshold:
+            raise ValueError("unknown threshold must be between 0 and confidence threshold")
 
 
 def parse_nms_output(
@@ -38,6 +42,8 @@ def parse_nms_output(
     *,
     input_size: int,
     confidence_threshold: float,
+    unknown_threshold: float = 0.20,
+    emit_unknown: bool = False,
     target_classes: dict[int, str] | None = None,
 ) -> list[Detection]:
     """Parse `[x1,y1,x2,y2,score,class_id]` rows into normalized detections."""
@@ -47,8 +53,12 @@ def parse_nms_output(
     for row in np.asarray(rows).reshape(-1, 6):
         x1, y1, x2, y2, score, class_id = row.tolist()
         label = classes.get(int(class_id))
-        if label is None or score < confidence_threshold:
+        if score < unknown_threshold:
             continue
+        if label is None or score < confidence_threshold:
+            if not emit_unknown:
+                continue
+            label = "unknown"
         box: Box = (
             max(0.0, min(1.0, x1 / input_size)),
             max(0.0, min(1.0, y1 / input_size)),
@@ -79,6 +89,8 @@ class OnnxDetector:
             rows,
             input_size=self.config.input_size,
             confidence_threshold=self.config.confidence_threshold,
+            unknown_threshold=self.config.unknown_threshold,
+            emit_unknown=self.config.emit_unknown,
             target_classes=self.config.target_classes,
         )
         enabled_zones = [zone for zone in (zones or []) if zone.enabled]

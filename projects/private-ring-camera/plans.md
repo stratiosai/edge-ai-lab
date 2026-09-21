@@ -209,7 +209,7 @@ Create these implementation folders only as their milestone begins; do not add e
 - [ ] Add event thumbnails, clips, class, confidence, zone, and count. (The private event schema and authenticated ingest/read API now persist the metadata contract; actual thumbnail/clip generation and detector wiring remain.)
 - [ ] Display live boxes and counts without baking overlays into original evidence video.
 - [ ] Measure false alerts during daylight, darkness, rain, glare, shadows, and partial occlusion. (Added the reproducible labeled-frame metrics harness; real controlled-camera annotations and environmental runs remain.)
-- [ ] Retain an `unknown` outcome rather than forcing weak detections into a class.
+- [x] Retain an `unknown` outcome rather than forcing weak detections into a class. (The Pi ONNX adapter supports an opt-in unknown label for weak/unmapped detections; unknowns are not counted as person/vehicle events and live wiring remains.)
 - [ ] Add deduplicated person/vehicle notifications only after event accuracy is measured.
 
 **Gate:** replay and live tests meet documented counting and alert accuracy targets.

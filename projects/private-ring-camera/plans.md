@@ -222,7 +222,7 @@ Create these implementation folders only as their milestone begins; do not add e
 - [x] Enable Tailscale HTTPS certificates and configure private Tailscale Serve on the Mac: `https://tindols-macbook-pro.tail133ca1.ts.net/` proxies to the local camera app over `https+insecure://127.0.0.1:8443`; Tailscale Funnel was explicitly left disabled. Pi-side HTTPS verification returned HTTP 200, and a clean browser rendered the protected camera sign-in page over the tailnet URL on 2026-09-20.
 - [x] Verify phone access away from home over Tailscale. (The operator confirmed the iOS Tailscale app works; the Mac tailnet status shows the online iOS peer `localhost` at `100.107.234.46` alongside the Pi at `100.94.184.109` on 2026-09-20. The camera URL is the tailnet-only HTTPS endpoint.)
 - [ ] Confirm no camera, API, database, or media port is publicly reachable.
-- [ ] Document credential rotation, device loss, and account revocation.
+- [x] Document credential rotation, device loss, and account revocation in [`docs/runbook.md`](docs/runbook.md).
 
 **Gate:** remote viewing works only through the VPN and passes the same authentication tests as LAN access.
 

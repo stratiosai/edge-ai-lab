@@ -133,7 +133,7 @@ Create these implementation folders only as their milestone begins; do not add e
 
 **Phase 4 — outage recovery and Version 1 acceptance.**
 
-**Active subtask:** finish the remaining Version 1 evidence and public-reachability check. Tailscale is installed and connected on the Mac, Pi, and operator phone; the camera services are reachable over the private Tailscale path and phone access was confirmed. Router UPnP/NAT-T hardening passed on 2026-09-21. The historical full 24-hour-expiry proof remains honestly unchecked because the operator chose not to wait a full elapsed day. Phase 5 person/vehicle intelligence has not begun.
+**Active subtask:** begin Phase 5 detector preparation while retaining the deferred 24-hour elapsed-retention and cross-timezone UI checks. Tailscale is installed and connected on the Mac, Pi, and operator phone; the camera services are reachable over the private Tailscale path and phone access was confirmed. Router UPnP/NAT-T hardening passed on 2026-09-21. Phase 5's detector candidates, motion-zone configuration, and measurement manifest are documented under [`phase5/README.md`](phase5/README.md); actual Pi inference benchmarking remains next.
 
 ### Phase 0 — prove the hardware
 

@@ -1,0 +1,29 @@
+# Normalized coordinates: left/top/right/bottom are in the range 0.0..1.0.
+# This example keeps the initial detector inside the controlled test area.
+
+[detector]
+classes = ["person", "car", "truck", "bus", "motorcycle"]
+confidence_threshold = 0.45
+iou_threshold = 0.50
+input_size = 320
+sample_fps = 3
+
+[tracking]
+max_age_frames = 15
+min_hits = 2
+count_cooldown_seconds = 3
+
+[[zones]]
+name = "controlled-test-area"
+left = 0.0
+top = 0.0
+right = 1.0
+bottom = 1.0
+enabled = true
+
+[events]
+emit_unknown = true
+write_overlay_video = false
+write_thumbnails = true
+notifications_enabled = false
+

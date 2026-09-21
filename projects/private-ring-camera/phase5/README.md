@@ -98,6 +98,10 @@ The Pi-facing `POST /api/ingest/event` endpoint is ingest-token protected and
 idempotent by event ID; the authenticated `GET /api/events` endpoint returns
 only the configured retention window. This is metadata plumbing, not proof of
 detection accuracy or a notification trigger.
+When an event references a retained segment, the authenticated
+`/api/events/{event_id}/thumbnail` route can extract a 480px review frame into
+the owner-only event directory. Missing media or ffmpeg fails closed and never
+changes the source recording.
 
 [`detector.py`](../../../src/stratios_edge_ai/private_camera/detector.py) is
 the Pi-safe ONNX Runtime adapter. It parses the exported NMS rows, normalizes

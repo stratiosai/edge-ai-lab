@@ -57,6 +57,7 @@ def test_protected_routes_require_authentication(tmp_path: Path) -> None:
     assert client.get("/api/events").status_code == 401
     assert client.get("/api/live").status_code == 401
     assert client.get("/api/segments/not-a-real-segment/thumbnail").status_code == 401
+    assert client.get("/api/events/not-a-real-event/thumbnail").status_code == 401
     assert client.get("/latency-test").status_code == 401
 
 
@@ -165,6 +166,7 @@ def test_event_ingest_is_idempotent_and_authenticated_for_readback(tmp_path: Pat
     events = client.get("/api/events").json()["events"]
     assert events[0]["label"] == "car"
     assert events[0]["direction"] == "a-to-b"
+    assert client.get("/api/events/evt-1/thumbnail").status_code == 404
 
 
 def test_event_ingest_rejects_invalid_metadata(tmp_path: Path) -> None:

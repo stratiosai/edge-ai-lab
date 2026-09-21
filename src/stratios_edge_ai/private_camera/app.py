@@ -340,6 +340,18 @@ def create_app(config: CameraServerConfig | None = None) -> FastAPI:
         until = until if until is not None else now + config.max_clock_skew_seconds
         return {"events": archive.list_events(since, until)}
 
+    @app.get("/api/events/{event_id}/thumbnail")
+    def event_thumbnail(
+        event_id: str,
+        _user: Annotated[dict[str, int | str], Depends(session_user)],
+    ) -> FileResponse:
+        thumbnail_path = archive.event_thumbnail_path(event_id)
+        if thumbnail_path is not None and not thumbnail_path.is_file():
+            archive.create_event_thumbnail(event_id)
+        if thumbnail_path is None or not thumbnail_path.is_file():
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+        return FileResponse(thumbnail_path, media_type="image/jpeg")
+
     def segment_or_404(segment_id: str) -> tuple[Path, dict[str, int | str]]:
         resolved = archive.resolve(segment_id)
         if resolved is None or not resolved[0].is_file():

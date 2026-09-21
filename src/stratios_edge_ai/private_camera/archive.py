@@ -69,6 +69,62 @@ class Archive:
             ).fetchall()
         return [dict(row) for row in rows]
 
+    def event_thumbnail_path(self, event_id: str) -> Path | None:
+        with self.database.connect() as connection:
+            row = connection.execute("SELECT id FROM events WHERE id = ?", (event_id,)).fetchone()
+        if row is None:
+            return None
+        directory = (self.directory / "events").resolve()
+        path = (directory / f"{event_id}.jpg").resolve()
+        if path.parent != directory:
+            raise RuntimeError("event thumbnail escaped archive directory")
+        return path
+
+    def create_event_thumbnail(self, event_id: str) -> bool:
+        """Extract one frame at the event time without modifying source video."""
+
+        thumbnail = self.event_thumbnail_path(event_id)
+        if thumbnail is None:
+            return False
+        with self.database.connect() as connection:
+            row = connection.execute(
+                """
+                SELECT events.occurred_at, segments.started_at, segments.filename
+                FROM events LEFT JOIN segments ON segments.id = events.segment_id
+                WHERE events.id = ?
+                """,
+                (event_id,),
+            ).fetchone()
+        if row is None or not row["filename"]:
+            return False
+        media = (self.directory / row["filename"]).resolve()
+        if media.parent != self.directory or not media.is_file():
+            return False
+        ffmpeg = shutil.which("ffmpeg")
+        if ffmpeg is None:
+            return False
+        offset = max(0, int(row["occurred_at"]) - int(row["started_at"]))
+        thumbnail.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
+        temporary = thumbnail.with_suffix(".partial.jpg")
+        try:
+            subprocess.run(
+                [
+                    ffmpeg, "-nostdin", "-loglevel", "error", "-y", "-ss", str(offset),
+                    "-i", str(media), "-frames:v", "1", "-vf", "scale=480:-2", str(temporary),
+                ],
+                check=True,
+                stdin=subprocess.DEVNULL,
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+                timeout=20,
+            )
+            temporary.chmod(0o600)
+            temporary.replace(thumbnail)
+            return True
+        except (FileNotFoundError, subprocess.CalledProcessError, subprocess.TimeoutExpired):
+            temporary.unlink(missing_ok=True)
+            return False
+
     def ingest(
         self,
         body: bytes,

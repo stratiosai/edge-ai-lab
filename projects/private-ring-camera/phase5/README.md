@@ -145,6 +145,11 @@ clip from a selected private segment with detector boxes, confidence, stable
 track IDs, counts, and zone text. The proof clip is generated outside Git;
 the source segment is never overwritten.
 
+[`create_label_manifest.py`](create_label_manifest.py) extracts evenly spaced
+JPEG review frames and writes a private `labels.json` template. Fill in each
+frame's condition and ground-truth `objects` before running the accuracy
+evaluator; an empty template is intentionally not an accuracy result.
+
 Run [`evaluate_accuracy.py`](evaluate_accuracy.py) on a private manifest when
 frames are labeled. Keep that manifest, frames, model binaries, and JSON
 results outside Git. The command reports aggregate and per-frame counts so the

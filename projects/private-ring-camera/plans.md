@@ -133,7 +133,7 @@ Create these implementation folders only as their milestone begins; do not add e
 
 **Phase 5 — person and vehicle intelligence.**
 
-**Active subtask:** continue Phase 5 detector preparation while retaining the deferred cross-timezone UI check. Tailscale is installed and connected on the Mac, Pi, and operator phone; the camera services are reachable over the private Tailscale path and phone access was confirmed. Router UPnP/NAT-T hardening passed on 2026-09-21. Phase 5's detector candidates, motion-zone configuration, measurement manifest, Pi ONNX benchmarks, detector adapter, guarded Pi-agent hook, motion-gated pipeline, offline segment replay, IoU tracker, crossing-line logic, event metadata contract, labeled-accuracy CLI, private frame-label sampler, prediction sidecar, and live-overlay canary path are documented under [`phase5/README.md`](phase5/README.md). A manually reviewed 12-frame controlled-indoor sample now measures 14/14 true-positive object matches with zero false positives or misses, but has two duplicate predictions; environmental coverage, duplicate-count acceptance, and unattended live detection remain next.
+**Active subtask:** continue Phase 5 detector preparation. Tailscale is installed and connected on the Mac, Pi, and operator phone; the camera services are reachable over the private Tailscale path and phone access was confirmed. Router UPnP/NAT-T hardening passed on 2026-09-21. Phase 5's detector candidates, motion-zone configuration, measurement manifest, Pi ONNX benchmarks, detector adapter, guarded Pi-agent hook, motion-gated pipeline, offline segment replay, IoU tracker, crossing-line logic, event metadata contract, labeled-accuracy CLI, private frame-label sampler, prediction sidecar, and live-overlay canary path are documented under [`phase5/README.md`](phase5/README.md). A manually reviewed 12-frame controlled-indoor sample now measures 14/14 true-positive object matches with zero false positives or misses, but has two duplicate predictions; environmental coverage, duplicate-count acceptance, and unattended live detection remain next.
 
 ### Phase 0 — prove the hardware
 
@@ -185,7 +185,7 @@ Create these implementation folders only as their milestone begins; do not add e
 - [x] Add disk high-water protection so retention failure cannot fill the Mac.
 - [x] Provide explicit selected-time-range export before expiry without automatic Photos or cloud copying. (Deployed UI acceptance verified a selected local ZIP export with a manifest on 2026-09-20.)
 - [x] Test restart recovery, partial files, and clock drift. (The restart-retention, Pi partial-segment retry, and timeline clock-skew tests pass in the local suite on 2026-09-21.)
-- [ ] Test time zones across the UI, archive index, and playback boundaries.
+- [x] Test time zones across the UI, archive index, and playback boundaries. (Browser time helpers passed under `America/New_York` and `America/Los_Angeles` across the 2026 DST fallback, preserving both repeated local-hour epochs for an unchanged export range; API tests verified integer epoch preservation and playback bytes. The updated bundle was deployed and the authenticated Day scrubber was re-verified on 2026-09-21.)
 
 **Gate:** a phone can play a chosen time from the last 24 hours and expired content is verifiably removed.
 
@@ -196,7 +196,7 @@ Create these implementation folders only as their milestone begins; do not add e
 - [x] Simulate Wi-Fi interruption and recovery. (On 2026-09-20, the Pi Wi-Fi radio was disabled for exactly 60 seconds by a root-scheduled automatic restore: NetworkManager logged radio-off at 15:37:56, radio-on at 15:38:56, reassociation and renewed `192.168.0.65` lease at 15:38:59. The Wi-Fi SSH endpoint was unreachable during the outage; capture, live relay, and uploader remained active afterward with `throttled=0x0`, the Mac archive advanced to 285 segments, and duplicate segment groups remained zero.)
 - [x] Reboot Pi and Mac in different orders. (The Pi-first path was verified earlier on 2026-09-20: it returned after a 44-second reboot while the Mac remained available and uploaded a post-reboot segment. The reverse Mac-first path was completed on 2026-09-20 after the controlled Mac recovery: the Pi rebooted at 15:41:17; capture, live relay, and uploader returned active with `throttled=0x0`; the Mac archive advanced from 286 to 287 segments with the new `1789933136` segment, and duplicate segment groups remained zero.)
 - [x] Verify least-privilege file access and authentication failure behavior. (Mac archive/runtime and Pi secrets, buffer, and logs are owner-only; unauthenticated live and segment API requests return HTTP 401.)
-- [x] Complete every Version 1 success check above. (All Version 1 checks listed above are now complete; cross-timezone UI testing remains a separate Phase 3 follow-up.)
+- [x] Complete every Version 1 success check above. (All Version 1 checks listed above are complete.)
 
 **Gate:** Version 1 is accepted and `P040` may be marked complete for its core Ring-style capability.
 

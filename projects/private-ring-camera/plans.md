@@ -133,7 +133,7 @@ Create these implementation folders only as their milestone begins; do not add e
 
 **Phase 4 — outage recovery and Version 1 acceptance.**
 
-**Active subtask:** finish the remaining Version 1 evidence and deliberate router exposure policy. Tailscale is installed and connected on the Mac, Pi, and operator phone; the camera services are reachable over the private Tailscale path and phone access was confirmed. The historical full 24-hour-expiry proof remains honestly unchecked because the operator chose not to wait a full elapsed day. Phase 5 person/vehicle intelligence has not begun.
+**Active subtask:** finish the remaining Version 1 evidence and public-reachability check. Tailscale is installed and connected on the Mac, Pi, and operator phone; the camera services are reachable over the private Tailscale path and phone access was confirmed. Router UPnP/NAT-T hardening passed on 2026-09-21. The historical full 24-hour-expiry proof remains honestly unchecked because the operator chose not to wait a full elapsed day. Phase 5 person/vehicle intelligence has not begun.
 
 ### Phase 0 — prove the hardware
 
@@ -169,7 +169,7 @@ Create these implementation folders only as their milestone begins; do not add e
 - [x] Expire sessions after seven days by default; implement manual logout and administrator revocation of all sessions.
 - [x] Provide a local Mac command that resets the administrator password and revokes existing sessions without printing credentials.
 - [x] Show live video, connection state, recording state, disk use, and camera health.
-- [ ] Do not expose Pi or Mac service ports through the home router. (2026-09-20 read-only Quantum Fiber Q1000K review found no Port Forwarding entries, Remote GUI disabled, and an empty UPnP NAT-T mapping list. UPnP and UPnP NAT-T remain enabled, so future automatic mappings remain possible; Tailscale is now the approved private access path and no router port was opened. The remaining dynamic-exposure risk still requires a deliberate router policy decision.)
+- [x] Do not expose Pi or Mac service ports through the home router. (On 2026-09-21, the Quantum Fiber Q1000K dashboard still showed no Port Forwarding entries and Remote GUI disabled; UPnP was set to Disabled and the UPnP NAT-T controls/mapping list disappeared. Tailscale is the approved private access path, no router port was opened, and Funnel remains disabled.)
 
 **Gate:** an authorized phone can view live video, while an unauthenticated browser is denied.
 

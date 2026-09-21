@@ -1,12 +1,6 @@
 let csrfToken = null;
 let allSegments = [];
 
-function toLocalInputValue(epochSeconds) {
-  const date = new Date(epochSeconds * 1000);
-  const offset = date.getTimezoneOffset() * 60000;
-  return new Date(date.getTime() - offset).toISOString().slice(0, 16);
-}
-
 async function api(path, options = {}) {
   const headers = {...(options.headers || {})};
   if (csrfToken && !["GET", "HEAD"].includes((options.method || "GET").toUpperCase())) {
@@ -72,8 +66,16 @@ async function loadTimeline() {
   if (segments.length) {
     const starts = segments.map(segment => segment.started_at);
     const ends = segments.map(segment => segment.ended_at);
-    document.querySelector("#export-start").value = toLocalInputValue(Math.min(...starts));
-    document.querySelector("#export-end").value = toLocalInputValue(Math.max(...ends));
+    const startInput = document.querySelector("#export-start");
+    const endInput = document.querySelector("#export-end");
+    const startEpoch = Math.min(...starts);
+    const endEpoch = Math.max(...ends);
+    startInput.value = EdgeCameraTime.localInputValue(startEpoch);
+    endInput.value = EdgeCameraTime.localInputValue(endEpoch);
+    startInput.dataset.epoch = String(startEpoch);
+    endInput.dataset.epoch = String(endEpoch);
+    startInput.dataset.displayValue = startInput.value;
+    endInput.dataset.displayValue = endInput.value;
   }
   populateScrubber();
   document.querySelector("#recordings-summary").textContent = `${segments.length} recording${segments.length === 1 ? "" : "s"} available locally`;
@@ -125,9 +127,7 @@ async function loadEvents() {
   }
 }
 
-function localDay(segment) {
-  return new Date(segment.started_at * 1000).toLocaleDateString(undefined, {weekday: "short", month: "short", day: "numeric"});
-}
+function localDay(segment) { return EdgeCameraTime.localDay(segment.started_at); }
 
 function segmentsForSelectedDay() {
   const day = document.querySelector("#recording-day").value;
@@ -153,8 +153,7 @@ function renderScrubberSelection() {
     rail.style.setProperty("--thumb-position", "0");
     return;
   }
-  const date = new Date(segment.started_at * 1000);
-  time.textContent = date.toLocaleString(undefined, {weekday: "short", month: "short", day: "numeric", hour: "numeric", minute: "2-digit", second: "2-digit"});
+  time.textContent = EdgeCameraTime.localDateTime(segment.started_at);
   position.textContent = `Recording ${Number(slider.value) + 1} of ${selections.length}`;
   play.href = `/api/segments/${segment.id}/media`;
   previous.disabled = Number(slider.value) === 0;
@@ -222,8 +221,10 @@ document.querySelector("#scrubber-previous").addEventListener("click", () => ste
 document.querySelector("#scrubber-next").addEventListener("click", () => stepScrubber(1));
 document.querySelector("#range-export").addEventListener("submit", event => {
   event.preventDefault();
-  const start = new Date(document.querySelector("#export-start").value).getTime() / 1000;
-  const end = new Date(document.querySelector("#export-end").value).getTime() / 1000;
+  const startInput = document.querySelector("#export-start");
+  const endInput = document.querySelector("#export-end");
+  const start = EdgeCameraTime.epochForInput(startInput.value, startInput.dataset.epoch);
+  const end = EdgeCameraTime.epochForInput(endInput.value, endInput.dataset.epoch);
   if (!Number.isFinite(start) || !Number.isFinite(end) || start >= end) {
     alert("Choose a valid start and end time.");
     return;

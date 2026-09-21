@@ -285,10 +285,13 @@ def test_retention_removes_expired_media_and_index(tmp_path: Path) -> None:
     assert client.get(f"/api/segments/{current_id}/media").status_code == 200
 
 
-def test_retention_uses_a_strict_24_hour_boundary(tmp_path: Path) -> None:
+def test_retention_uses_a_strict_24_hour_boundary(tmp_path: Path, monkeypatch) -> None:
     client = make_client(tmp_path)
     csrf = login(client)
     now = int(time.time())
+    import stratios_edge_ai.private_camera.app as private_camera_app
+
+    monkeypatch.setattr(private_camera_app.time, "time", lambda: now)
     expired_id = ingest(client, started_at=now - 86461, ended_at=now - 86401)
     boundary_id = ingest(client, started_at=now - 86460, ended_at=now - 86400)
 

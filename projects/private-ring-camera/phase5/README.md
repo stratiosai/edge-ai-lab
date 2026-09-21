@@ -134,6 +134,12 @@ line, and `EventSuggestion` output. Quiet frames skip detector inference;
 confirmed tracks produce metadata only. It has no camera, network, or
 notification side effects until explicitly wired into a service.
 
+[`replay_segment.py`](replay_segment.py) is the safe first integration path:
+it replays one selected archived MP4 through the pipeline and writes event JSON
+to a caller-selected private directory. It does not modify recordings or send
+events over the network, making it suitable for accuracy review before an
+always-on Pi service.
+
 Run [`evaluate_accuracy.py`](evaluate_accuracy.py) on a private manifest when
 frames are labeled. Keep that manifest, frames, model binaries, and JSON
 results outside Git. The command reports aggregate and per-frame counts so the

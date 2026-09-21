@@ -185,9 +185,11 @@ track IDs, counts, and zone text. The proof clip is generated outside Git;
 the source segment is never overwritten.
 
 [`create_label_manifest.py`](create_label_manifest.py) extracts evenly spaced
-JPEG review frames and writes a private `labels.json` template. Fill in each
-frame's condition and ground-truth `objects` before running the accuracy
-evaluator; an empty template is intentionally not an accuracy result.
+JPEG review frames and writes a private `labels.json` template. The CLI
+requires `--condition` (`controlled-indoor`, `daylight`, `darkness`, `rain`,
+`glare`, `shadows`, or `occlusion`) so every sample is attributable to a
+specific environment. Fill in ground-truth `objects` before running the
+accuracy evaluator; an empty template is intentionally not an accuracy result.
 
 [`predict_manifest.py`](predict_manifest.py) writes a separate private
 `predictions.json` sidecar with model suggestions and normalized boxes. It is

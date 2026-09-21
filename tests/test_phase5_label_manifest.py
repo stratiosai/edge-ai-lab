@@ -13,3 +13,8 @@ SPEC.loader.exec_module(MODULE)
 def test_manifest_rejects_empty_sample_count(tmp_path: Path) -> None:
     with pytest.raises(ValueError, match="positive"):
         MODULE.create_manifest(tmp_path / "missing.mp4", tmp_path / "frames", samples=0)
+
+
+def test_manifest_rejects_untracked_condition(tmp_path: Path) -> None:
+    with pytest.raises(ValueError, match="unsupported condition"):
+        MODULE.create_manifest(tmp_path / "missing.mp4", tmp_path / "frames", condition="fog")

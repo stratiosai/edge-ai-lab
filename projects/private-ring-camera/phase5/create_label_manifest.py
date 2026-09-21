@@ -8,10 +8,19 @@ from pathlib import Path
 
 import cv2
 
+CONDITIONS = {"controlled-indoor", "daylight", "darkness", "rain", "glare", "shadows", "occlusion"}
 
-def create_manifest(segment: Path, output_dir: Path, *, samples: int = 12) -> Path:
+def create_manifest(
+    segment: Path,
+    output_dir: Path,
+    *,
+    samples: int = 12,
+    condition: str = "controlled-indoor",
+) -> Path:
     if samples < 1:
         raise ValueError("samples must be positive")
+    if condition not in CONDITIONS:
+        raise ValueError(f"unsupported condition: {condition}")
     capture = cv2.VideoCapture(str(segment))
     if not capture.isOpened():
         raise ValueError(f"cannot open segment: {segment}")
@@ -35,7 +44,7 @@ def create_manifest(segment: Path, output_dir: Path, *, samples: int = 12) -> Pa
             {
                 "image": str(image),
                 "timestamp_seconds": round(frame_index / fps, 3),
-                "condition": "label-me: daylight|darkness|glare|rain|shadow|occlusion",
+                "condition": condition,
                 "objects": [],
             }
         )
@@ -50,8 +59,9 @@ def main() -> None:
     parser.add_argument("segment", type=Path)
     parser.add_argument("output_dir", type=Path)
     parser.add_argument("--samples", type=int, default=12)
+    parser.add_argument("--condition", choices=sorted(CONDITIONS), required=True)
     args = parser.parse_args()
-    print(create_manifest(args.segment, args.output_dir, samples=args.samples))
+    print(create_manifest(args.segment, args.output_dir, samples=args.samples, condition=args.condition))
 
 
 if __name__ == "__main__":

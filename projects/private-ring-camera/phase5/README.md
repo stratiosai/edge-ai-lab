@@ -118,6 +118,13 @@ quiet scene, confirming that the default motion gate suppresses inference when
 there is no observed activity. These two canaries demonstrate guarded active
 and quiet behavior, not environmental accuracy or unattended acceptance.
 
+A closed 60-second Pi segment from the current daylight indoor placement was
+also copied to the private Phase 5 proof directory and replayed locally on
+2026-09-21. The replay read all 900 frames at 15 FPS, produced zero pipeline
+events because the scene was static under the motion gate, and generated a
+separate 10-second derived overlay proof clip. The source MP4 was not changed;
+the segment, replay JSON, and proof clip remain outside Git.
+
 ## Tracking primitive
 
 [`tracking.py`](../../../src/stratios_edge_ai/private_camera/tracking.py)

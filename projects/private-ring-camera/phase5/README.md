@@ -69,6 +69,17 @@ reported at both endpoints, and `throttled=0x0`. The Pi capture, live, and
 archive-agent services remained active and its bounded buffer remained at two
 files. This validates a sustained speed/thermal baseline, not event accuracy.
 
+## Tracking primitive
+
+[`tracking.py`](../../../src/stratios_edge_ai/private_camera/tracking.py)
+contains the first deterministic tracking primitive. It matches detections of
+the same class by greedy highest intersection-over-union (IoU), confirms a
+track after `min_hits`, ages it through short detector gaps, and emits one
+counting candidate when a track first becomes confirmed. Expired tracks can be
+counted again when a genuinely new object enters. The implementation is
+camera-local and has no notification or actuator side effects; crossing-line
+direction and live-service integration are the next steps.
+
 ## Reproducible run records
 
 Each run should keep a text manifest outside Git containing:

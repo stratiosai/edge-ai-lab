@@ -133,7 +133,7 @@ Create these implementation folders only as their milestone begins; do not add e
 
 **Phase 4 — outage recovery and Version 1 acceptance.**
 
-**Active subtask:** begin Phase 5 detector preparation while retaining the deferred 24-hour elapsed-retention and cross-timezone UI checks. Tailscale is installed and connected on the Mac, Pi, and operator phone; the camera services are reachable over the private Tailscale path and phone access was confirmed. Router UPnP/NAT-T hardening passed on 2026-09-21. Phase 5's detector candidates, motion-zone configuration, and measurement manifest are documented under [`phase5/README.md`](phase5/README.md); actual Pi inference benchmarking remains next.
+**Active subtask:** continue Phase 5 detector preparation while retaining the deferred 24-hour elapsed-retention and cross-timezone UI checks. Tailscale is installed and connected on the Mac, Pi, and operator phone; the camera services are reachable over the private Tailscale path and phone access was confirmed. Router UPnP/NAT-T hardening passed on 2026-09-21. Phase 5's detector candidates, motion-zone configuration, measurement manifest, Pi ONNX benchmarks, and deterministic IoU tracker are documented under [`phase5/README.md`](phase5/README.md); detector accuracy and live-service wiring remain next.
 
 ### Phase 0 — prove the hardware
 
@@ -204,7 +204,7 @@ Create these implementation folders only as their milestone begins; do not add e
 
 - [x] Start with motion zones to avoid continuous inference. (Added the deterministic `MotionZone`/`MotionGate` implementation with normalized coordinates, thresholding, and unit tests; live-service wiring remains before notifications.)
 - [x] Benchmark at least two small person/vehicle detectors on the actual Pi. (ONNX Runtime CPU baselines at 320px on 2026-09-21: `yolo26n` ~14.2 FPS median 64.0 ms / p95 103.2 ms; `yolo26s` ~3.6 FPS median 274.3 ms / p95 307.1 ms. A 4,700-iteration `yolo26n` sustained run averaged 14.1 FPS at 70.5°C with `throttled=0x0`; accuracy measurements remain.)
-- [ ] Track objects temporarily to avoid counting the same object in every frame.
+- [x] Track objects temporarily to avoid counting the same object in every frame. (Added a class-aware greedy IoU tracker with configurable overlap, age, and confirmation thresholds plus expiry/recount tests; crossing-line and live-service wiring remain.)
 - [ ] Add configurable crossing lines and approach/departure direction.
 - [ ] Add event thumbnails, clips, class, confidence, zone, and count.
 - [ ] Display live boxes and counts without baking overlays into original evidence video.

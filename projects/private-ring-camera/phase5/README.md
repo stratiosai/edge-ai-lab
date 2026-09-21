@@ -93,6 +93,12 @@ and a bounded clip window. Pixel crops are clamped to the source frame and
 invalid confidence or clip ranges are rejected. Persistence, clip extraction,
 and UI display still require live detector wiring and measured accuracy.
 
+The Mac archive now persists these suggestions in its private SQLite database.
+The Pi-facing `POST /api/ingest/event` endpoint is ingest-token protected and
+idempotent by event ID; the authenticated `GET /api/events` endpoint returns
+only the configured retention window. This is metadata plumbing, not proof of
+detection accuracy or a notification trigger.
+
 ## Reproducible run records
 
 Each run should keep a text manifest outside Git containing:

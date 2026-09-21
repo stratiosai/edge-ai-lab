@@ -12,6 +12,7 @@ import uuid
 from pathlib import Path
 
 from .database import Database
+from .events import EventSuggestion
 
 
 class ArchiveFullError(RuntimeError):
@@ -30,6 +31,43 @@ class Archive:
                 "SELECT COALESCE(SUM(size_bytes), 0) AS total FROM segments"
             ).fetchone()
         return int(row["total"])
+
+    def ingest_event(self, event: EventSuggestion) -> bool:
+        """Persist an idempotent detector event without touching source media."""
+
+        with self.database.connect() as connection:
+            existing = connection.execute("SELECT id FROM events WHERE id = ?", (event.event_id,)).fetchone()
+            if existing is not None:
+                return False
+            connection.execute(
+                """
+                INSERT INTO events
+                    (id, occurred_at, track_id, label, confidence, zone, count,
+                     direction, segment_id, thumbnail_path, clip_start, clip_end, created_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                (
+                    event.event_id, event.occurred_at, event.track_id, event.label,
+                    event.confidence, event.zone, event.count, event.direction,
+                    event.segment_id, event.thumbnail_path, event.clip_start,
+                    event.clip_end, int(time.time()),
+                ),
+            )
+        return True
+
+    def list_events(self, since: int, until: int) -> list[dict[str, int | float | str | None]]:
+        with self.database.connect() as connection:
+            rows = connection.execute(
+                """
+                SELECT id, occurred_at, track_id, label, confidence, zone, count,
+                       direction, segment_id, thumbnail_path, clip_start, clip_end
+                FROM events
+                WHERE occurred_at BETWEEN ? AND ?
+                ORDER BY occurred_at DESC
+                """,
+                (since, until),
+            ).fetchall()
+        return [dict(row) for row in rows]
 
     def ingest(
         self,

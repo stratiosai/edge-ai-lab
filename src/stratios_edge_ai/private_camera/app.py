@@ -20,6 +20,7 @@ from starlette.background import BackgroundTask
 from .archive import Archive, ArchiveFullError
 from .config import CameraServerConfig
 from .database import Database
+from .events import EventSuggestion
 from .security import (
     SESSION_COOKIE,
     LoginLimiter,
@@ -35,6 +36,21 @@ LIVE_MJPEG_BOUNDARY = "edge-camera-frame"
 class LoginRequest(BaseModel):
     username: str
     password: str
+
+
+class EventIngestRequest(BaseModel):
+    event_id: str
+    occurred_at: int
+    track_id: int
+    label: str
+    confidence: float
+    zone: str
+    count: int
+    direction: str | None = None
+    segment_id: str | None = None
+    thumbnail_path: str | None = None
+    clip_start: int | None = None
+    clip_end: int | None = None
 
 
 def create_app(config: CameraServerConfig | None = None) -> FastAPI:
@@ -288,6 +304,20 @@ def create_app(config: CameraServerConfig | None = None) -> FastAPI:
             "result": "created" if created else "already-present",
         }
 
+    @app.post("/api/ingest/event", dependencies=[Depends(require_ingest_token)])
+    def ingest_event(payload: EventIngestRequest) -> dict[str, str]:
+        try:
+            event = EventSuggestion(**payload.model_dump())
+            latest_accepted_time = int(time.time()) + config.max_clock_skew_seconds
+            if event.occurred_at > latest_accepted_time:
+                raise ValueError("event timestamp is too far ahead; synchronize the Pi clock")
+            created = archive.ingest_event(event)
+        except ValueError as exc:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(exc)
+            ) from exc
+        return {"status": "ok", "event_id": event.event_id, "result": "created" if created else "already-present"}
+
     @app.get("/api/segments")
     def segments(
         _user: Annotated[dict[str, int | str], Depends(session_user)],
@@ -298,6 +328,17 @@ def create_app(config: CameraServerConfig | None = None) -> FastAPI:
         since = since if since is not None else now - config.retention_hours * 3600
         until = until if until is not None else now + config.max_clock_skew_seconds
         return {"segments": archive.list_segments(since, until)}
+
+    @app.get("/api/events")
+    def events(
+        _user: Annotated[dict[str, int | str], Depends(session_user)],
+        since: int | None = None,
+        until: int | None = None,
+    ) -> dict[str, object]:
+        now = int(time.time())
+        since = since if since is not None else now - config.retention_hours * 3600
+        until = until if until is not None else now + config.max_clock_skew_seconds
+        return {"events": archive.list_events(since, until)}
 
     def segment_or_404(segment_id: str) -> tuple[Path, dict[str, int | str]]:
         resolved = archive.resolve(segment_id)

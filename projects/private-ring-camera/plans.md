@@ -206,7 +206,7 @@ Create these implementation folders only as their milestone begins; do not add e
 - [x] Benchmark at least two small person/vehicle detectors on the actual Pi. (ONNX Runtime CPU baselines at 320px on 2026-09-21: `yolo26n` ~14.2 FPS median 64.0 ms / p95 103.2 ms; `yolo26s` ~3.6 FPS median 274.3 ms / p95 307.1 ms. A 4,700-iteration `yolo26n` sustained run averaged 14.1 FPS at 70.5°C with `throttled=0x0`; accuracy measurements remain.)
 - [x] Track objects temporarily to avoid counting the same object in every frame. (Added a class-aware greedy IoU tracker with configurable overlap, age, and confirmation thresholds plus expiry/recount tests; crossing-line and live-service wiring remain.)
 - [x] Add configurable crossing lines and approach/departure direction. (Added normalized-coordinate crossing-line direction detection with a jitter deadband, one event per track, expiry reset, and tests; live-service wiring remains.)
-- [ ] Add event thumbnails, clips, class, confidence, zone, and count.
+- [ ] Add event thumbnails, clips, class, confidence, zone, and count. (The private event schema and authenticated ingest/read API now persist the metadata contract; actual thumbnail/clip generation and detector wiring remain.)
 - [ ] Display live boxes and counts without baking overlays into original evidence video.
 - [ ] Measure false alerts during daylight, darkness, rain, glare, shadows, and partial occlusion.
 - [ ] Retain an `unknown` outcome rather than forcing weak detections into a class.

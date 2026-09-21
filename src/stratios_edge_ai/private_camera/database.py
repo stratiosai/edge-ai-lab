@@ -55,6 +55,24 @@ CREATE TABLE IF NOT EXISTS camera_health (
     payload_json TEXT NOT NULL,
     updated_at INTEGER NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS events (
+    id TEXT PRIMARY KEY,
+    occurred_at INTEGER NOT NULL,
+    track_id INTEGER NOT NULL,
+    label TEXT NOT NULL,
+    confidence REAL NOT NULL CHECK (confidence >= 0.0 AND confidence <= 1.0),
+    zone TEXT NOT NULL,
+    count INTEGER NOT NULL CHECK (count > 0),
+    direction TEXT,
+    segment_id TEXT REFERENCES segments(id) ON DELETE SET NULL,
+    thumbnail_path TEXT,
+    clip_start INTEGER,
+    clip_end INTEGER,
+    created_at INTEGER NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS events_occurred_at_idx ON events(occurred_at DESC);
 """
 
 

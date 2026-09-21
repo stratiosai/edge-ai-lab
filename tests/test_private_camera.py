@@ -54,6 +54,7 @@ def test_protected_routes_require_authentication(tmp_path: Path) -> None:
     assert client.get("/api/session").status_code == 401
     assert client.get("/api/health").status_code == 401
     assert client.get("/api/segments").status_code == 401
+    assert client.get("/api/events").status_code == 401
     assert client.get("/api/live").status_code == 401
     assert client.get("/api/segments/not-a-real-segment/thumbnail").status_code == 401
     assert client.get("/latency-test").status_code == 401
@@ -134,6 +135,54 @@ def test_timeline_exposes_optional_motion_metadata(tmp_path: Path) -> None:
     segment = client.get("/api/segments").json()["segments"][0]
     assert segment["motion_score"] == 0.125
     assert segment["motion_detected"] == 1
+
+
+def test_event_ingest_is_idempotent_and_authenticated_for_readback(tmp_path: Path) -> None:
+    client = make_client(tmp_path)
+    now = int(time.time())
+    payload = {
+        "event_id": "evt-1",
+        "occurred_at": now - 10,
+        "track_id": 3,
+        "label": "car",
+        "confidence": 0.91,
+        "zone": "driveway",
+        "count": 1,
+        "direction": "a-to-b",
+        "thumbnail_path": "events/evt-1.jpg",
+        "clip_start": now - 15,
+        "clip_end": now,
+    }
+    missing_token = client.post("/api/ingest/event", json=payload)
+    assert missing_token.status_code == 401
+    headers = {"X-Ingest-Token": INGEST_TOKEN}
+    first = client.post("/api/ingest/event", json=payload, headers=headers)
+    second = client.post("/api/ingest/event", json=payload, headers=headers)
+    assert first.status_code == second.status_code == 200
+    assert first.json()["result"] == "created"
+    assert second.json()["result"] == "already-present"
+    login(client)
+    events = client.get("/api/events").json()["events"]
+    assert events[0]["label"] == "car"
+    assert events[0]["direction"] == "a-to-b"
+
+
+def test_event_ingest_rejects_invalid_metadata(tmp_path: Path) -> None:
+    client = make_client(tmp_path)
+    response = client.post(
+        "/api/ingest/event",
+        json={
+            "event_id": "bad",
+            "occurred_at": int(time.time()),
+            "track_id": 1,
+            "label": "person",
+            "confidence": 1.5,
+            "zone": "yard",
+            "count": 1,
+        },
+        headers={"X-Ingest-Token": INGEST_TOKEN},
+    )
+    assert response.status_code == 422
 
 
 def test_authenticated_range_export_is_local_zip(tmp_path: Path) -> None:

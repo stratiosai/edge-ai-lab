@@ -28,7 +28,7 @@ async function showDashboard(session) {
   document.querySelector("#login-card").hidden = true;
   document.querySelector("#dashboard").hidden = false;
   document.querySelector("#live-view").src = `/api/live?cache=${Date.now()}`;
-  await Promise.all([loadHealth(), loadTimeline()]);
+  await Promise.all([loadHealth(), loadTimeline(), loadEvents()]);
 }
 
 async function loadHealth() {
@@ -94,6 +94,30 @@ async function loadTimeline() {
     const download = document.createElement("a"); download.href = `/api/segments/${segment.id}/export`; download.textContent = "Export";
     const remove = document.createElement("button"); remove.className = "secondary"; remove.textContent = "Delete"; remove.addEventListener("click", () => deleteSegment(segment.id));
     actions.append(play, download, remove); row.append(label, actions); timeline.append(row);
+  }
+}
+
+async function loadEvents() {
+  const response = await api("/api/events");
+  if (!response.ok) return;
+  const {events} = await response.json();
+  const list = document.querySelector("#events-list");
+  list.replaceChildren();
+  document.querySelector("#events-summary").textContent = `${events.length} event${events.length === 1 ? "" : "s"} in the retention window`;
+  if (!events.length) {
+    list.textContent = "No detector events yet. Detection remains disabled until the accuracy gate is complete.";
+    return;
+  }
+  for (const event of events) {
+    const row = document.createElement("div");
+    row.className = "event-row";
+    const occurred = new Date(event.occurred_at * 1000).toLocaleString();
+    const direction = event.direction ? ` · ${event.direction}` : "";
+    const label = document.createElement("strong"); label.textContent = event.label;
+    const detail = document.createElement("span"); detail.textContent = `${Math.round(event.confidence * 100)}% · ${event.zone} · count ${event.count}${direction}`;
+    const time = document.createElement("time"); time.textContent = occurred;
+    row.append(label, detail, time);
+    list.append(row);
   }
 }
 
@@ -185,7 +209,7 @@ document.querySelector("#login-form").addEventListener("submit", async event => 
 });
 document.querySelector("#logout").addEventListener("click", async () => { await api("/api/logout", {method:"POST"}); csrfToken = null; showLogin(); });
 document.querySelector("#logout-all").addEventListener("click", logoutAllDevices);
-document.querySelector("#refresh").addEventListener("click", () => Promise.all([loadHealth(), loadTimeline()]));
+document.querySelector("#refresh").addEventListener("click", () => Promise.all([loadHealth(), loadTimeline(), loadEvents()]));
 document.querySelector("#list-view-button").addEventListener("click", () => setRecordingView("list"));
 document.querySelector("#scrubber-view-button").addEventListener("click", () => setRecordingView("scrubber"));
 document.querySelector("#recording-day").addEventListener("change", () => { document.querySelector("#recording-slider").value = 0; populateScrubber(); });

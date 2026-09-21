@@ -19,6 +19,10 @@ button:hover { background:#007bb9; } button.secondary { background:#f8fafb; colo
 .status-grid article { display:grid; gap:8px; }.status-grid strong { font-size:1.15rem; }
 .health-detail { margin:0 0 18px; font-size:.9rem; }
 .live-card { margin-bottom:18px; }
+.events-card { margin-bottom:18px; }
+.events-list { display:grid; gap:8px; }
+.event-row { display:grid; grid-template-columns:auto 1fr auto; align-items:center; gap:12px; padding:11px 12px; border:1px solid #e4edf2; border-radius:10px; background:#f7fbfd; }
+.event-row strong { color:#0078b9; text-transform:capitalize; }.event-row span,.event-row time { color:#5f6b73; font-size:.84rem; }.event-row time { white-space:nowrap; }
 .video-shell { aspect-ratio:16/9; background:#091015; border-radius:12px; overflow:hidden; display:grid; place-items:center; }
 .video-shell img { display:block; width:100%; height:100%; object-fit:contain; }
 .timeline { display:grid; gap:10px; }
@@ -41,3 +45,4 @@ button.view-tab.active { background:#e7f5fc; color:#0078b9; }
 .segment-actions { display:flex; gap:8px; flex-wrap:wrap; }.segment-actions a,.segment-actions button { font-size:.82rem; padding:8px 10px; }
 .segment-actions a { color:#0078b9; align-self:center; font-weight:700; }
 @media (max-width:700px) { .status-grid { grid-template-columns:1fr; } main { padding-top:18px; } header { align-items:flex-start; } .header-actions { justify-content:flex-start; } .range-export { grid-template-columns:1fr; }.scrubber-player { padding:10px; }.scrubber-topbar { grid-template-columns:1fr auto; }.camera-label { display:none; }.scrubber-footer { align-items:flex-start; flex-direction:column; gap:4px; } }
+@media (max-width:700px) { .event-row { grid-template-columns:1fr; gap:4px; }.event-row time { white-space:normal; } }

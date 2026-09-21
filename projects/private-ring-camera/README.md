@@ -80,6 +80,8 @@ The household deployment must put the service behind LAN/VPN HTTPS and leave sec
 .venv/bin/pytest
 ```
 
+Last local verification (2026-09-21): `ruff check .` passed and all 19 tests passed. The warnings are dependency deprecations only; there were no test failures.
+
 Synthetic bytes are used for API and retention tests. Real household media is never added to the test suite or Git.
 
 ## Soak monitoring

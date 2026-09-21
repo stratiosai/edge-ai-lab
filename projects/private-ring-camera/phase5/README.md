@@ -128,6 +128,12 @@ counts, track IDs, confidence, and boxes onto a derived BGR frame. It copies
 the input first, so the original recording/evidence frame is never modified;
 connecting this renderer to a live analysis stream remains gated on accuracy.
 
+[`pipeline.py`](../../../src/stratios_edge_ai/private_camera/pipeline.py)
+composes the motion gate, detector adapter callback, tracker, optional crossing
+line, and `EventSuggestion` output. Quiet frames skip detector inference;
+confirmed tracks produce metadata only. It has no camera, network, or
+notification side effects until explicitly wired into a service.
+
 Run [`evaluate_accuracy.py`](evaluate_accuracy.py) on a private manifest when
 frames are labeled. Keep that manifest, frames, model binaries, and JSON
 results outside Git. The command reports aggregate and per-frame counts so the

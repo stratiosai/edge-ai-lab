@@ -99,6 +99,12 @@ idempotent by event ID; the authenticated `GET /api/events` endpoint returns
 only the configured retention window. This is metadata plumbing, not proof of
 detection accuracy or a notification trigger.
 
+[`detector.py`](../../../src/stratios_edge_ai/private_camera/detector.py) is
+the Pi-safe ONNX Runtime adapter. It parses the exported NMS rows, normalizes
+boxes, filters target classes/confidence, and applies enabled motion zones
+before handing detections to the tracker. It has no default camera loop or
+network side effect; deployment remains gated on labeled accuracy checks.
+
 ## Reproducible run records
 
 Each run should keep a text manifest outside Git containing:

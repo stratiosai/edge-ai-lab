@@ -116,7 +116,11 @@ async function loadEvents() {
     const label = document.createElement("strong"); label.textContent = event.label;
     const detail = document.createElement("span"); detail.textContent = `${Math.round(event.confidence * 100)}% · ${event.zone} · count ${event.count}${direction}`;
     const time = document.createElement("time"); time.textContent = occurred;
-    row.append(label, detail, time);
+    const actions = document.createElement("span"); actions.className = "event-actions";
+    const preview = document.createElement("a"); preview.href = `/api/events/${encodeURIComponent(event.id)}/thumbnail`; preview.textContent = "Preview"; preview.target = "_blank"; preview.rel = "noreferrer";
+    const clip = document.createElement("a"); clip.href = `/api/events/${encodeURIComponent(event.id)}/clip`; clip.textContent = "Clip"; clip.target = "_blank"; clip.rel = "noreferrer";
+    actions.append(preview, clip);
+    row.append(label, detail, time, actions);
     list.append(row);
   }
 }

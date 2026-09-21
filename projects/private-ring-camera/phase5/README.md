@@ -56,6 +56,12 @@ These are review criteria, not claimed results. `evaluate_environment.py`
 enforces the precision, recall, and duplicate limits; the count-error target
 is reviewed from the replay/event report.
 
+`private_camera.privacy` provides an opt-in normalized privacy-mask primitive
+that blacks only a derived frame copy. An example disabled mask is included in
+[`configs/phase5-detection.example.toml`](../configs/phase5-detection.example.toml);
+the active indoor V1 does not enable it, and outdoor/shared-space deployment
+must configure and review masks first.
+
 ## Mac model baseline (2026-09-21)
 
 The existing Mac virtualenv ran both candidate models against one representative

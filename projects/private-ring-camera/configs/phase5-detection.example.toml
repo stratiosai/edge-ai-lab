@@ -27,3 +27,12 @@ write_overlay_video = false
 write_thumbnails = true
 notifications_enabled = false
 
+# Opt-in only. Configure before any outdoor/shared-space deployment; these
+# masks apply to derived frames and are not enabled by the current indoor V1.
+[[privacy_masks]]
+name = "example-window"
+left = 0.0
+top = 0.0
+right = 0.25
+bottom = 1.0
+enabled = false

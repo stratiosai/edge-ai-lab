@@ -50,7 +50,7 @@ Version 1 is complete only when all of these are demonstrated from a real phone 
 - [x] Export a selected time range and verify no automatic cloud or Photos copy occurs. (A one-minute range was exported through the authenticated UI on 2026-09-20 as a local ZIP containing selected MP4s plus an integrity manifest; no Photos or cloud action was triggered.)
 - [ ] Confirm recordings expire automatically after 24 hours.
 - [x] Reboot the Pi and recover without manually restarting the application. (On 2026-09-20, the Pi returned after a 44-second reboot with user lingering and all three enabled services active; a post-reboot segment then reached the Mac archive.)
-- [ ] Disconnect the Mac temporarily, continue buffering on the Pi, then reconcile after reconnection.
+- [x] Disconnect the Mac temporarily, continue buffering on the Pi, then reconcile after reconnection. (On 2026-09-21, the Mac receiver was paused while the Pi services stayed active; after resuming, the archive advanced from 327 to 329 segments, the Pi buffer returned from 3 to 2 files, all three services remained active, and duplicate `(started_at, ended_at, sha256)` groups remained zero.)
 - [x] Confirm an unauthenticated device cannot view the stream or recordings. (Live and segment API requests without a session returned HTTP 401 against the deployed HTTPS service on 2026-09-20.)
 
 Object detection and notifications are intentionally not required to pass this first gate.

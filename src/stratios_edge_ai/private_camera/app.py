@@ -352,6 +352,18 @@ def create_app(config: CameraServerConfig | None = None) -> FastAPI:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
         return FileResponse(thumbnail_path, media_type="image/jpeg")
 
+    @app.get("/api/events/{event_id}/clip")
+    def event_clip(
+        event_id: str,
+        _user: Annotated[dict[str, int | str], Depends(session_user)],
+    ) -> FileResponse:
+        clip_path = archive.event_clip_path(event_id)
+        if clip_path is not None and not clip_path.is_file():
+            archive.create_event_clip(event_id)
+        if clip_path is None or not clip_path.is_file():
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+        return FileResponse(clip_path, media_type="video/mp4", filename=f"edge-camera-event-{event_id}.mp4")
+
     def segment_or_404(segment_id: str) -> tuple[Path, dict[str, int | str]]:
         resolved = archive.resolve(segment_id)
         if resolved is None or not resolved[0].is_file():

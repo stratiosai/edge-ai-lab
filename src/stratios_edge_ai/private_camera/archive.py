@@ -125,6 +125,71 @@ class Archive:
             temporary.unlink(missing_ok=True)
             return False
 
+    def event_clip_path(self, event_id: str) -> Path | None:
+        with self.database.connect() as connection:
+            row = connection.execute("SELECT id FROM events WHERE id = ?", (event_id,)).fetchone()
+        if row is None:
+            return None
+        directory = (self.directory / "events").resolve()
+        path = (directory / f"{event_id}.mp4").resolve()
+        if path.parent != directory:
+            raise RuntimeError("event clip escaped archive directory")
+        return path
+
+    def create_event_clip(self, event_id: str) -> bool:
+        """Extract a short review clip, bounded to the source segment."""
+
+        clip = self.event_clip_path(event_id)
+        if clip is None:
+            return False
+        with self.database.connect() as connection:
+            row = connection.execute(
+                """
+                SELECT events.occurred_at, events.clip_start, events.clip_end,
+                       segments.started_at, segments.ended_at, segments.filename
+                FROM events LEFT JOIN segments ON segments.id = events.segment_id
+                WHERE events.id = ?
+                """,
+                (event_id,),
+            ).fetchone()
+        if row is None or not row["filename"]:
+            return False
+        media = (self.directory / row["filename"]).resolve()
+        if media.parent != self.directory or not media.is_file():
+            return False
+        ffmpeg = shutil.which("ffmpeg")
+        if ffmpeg is None:
+            return False
+        start = int(row["clip_start"] or (int(row["occurred_at"]) - 5))
+        end = int(row["clip_end"] or (int(row["occurred_at"]) + 10))
+        start = max(int(row["started_at"]), start)
+        end = min(int(row["ended_at"]), end)
+        if end <= start:
+            return False
+        offset = start - int(row["started_at"])
+        duration = end - start
+        clip.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
+        temporary = clip.with_suffix(".partial.mp4")
+        try:
+            subprocess.run(
+                [
+                    ffmpeg, "-nostdin", "-loglevel", "error", "-y", "-ss", str(offset),
+                    "-i", str(media), "-t", str(duration), "-c", "copy",
+                    "-movflags", "+faststart", str(temporary),
+                ],
+                check=True,
+                stdin=subprocess.DEVNULL,
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+                timeout=45,
+            )
+            temporary.chmod(0o600)
+            temporary.replace(clip)
+            return True
+        except (FileNotFoundError, subprocess.CalledProcessError, subprocess.TimeoutExpired):
+            temporary.unlink(missing_ok=True)
+            return False
+
     def ingest(
         self,
         body: bytes,

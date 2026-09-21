@@ -102,6 +102,9 @@ When an event references a retained segment, the authenticated
 `/api/events/{event_id}/thumbnail` route can extract a 480px review frame into
 the owner-only event directory. Missing media or ffmpeg fails closed and never
 changes the source recording.
+The authenticated `/api/events/{event_id}/clip` route similarly extracts a
+bounded MP4 review window from the referenced segment, clamped to that
+segment's start/end times and written with owner-only permissions.
 
 [`detector.py`](../../../src/stratios_edge_ai/private_camera/detector.py) is
 the Pi-safe ONNX Runtime adapter. It parses the exported NMS rows, normalizes

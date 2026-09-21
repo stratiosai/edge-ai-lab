@@ -105,6 +105,11 @@ boxes, filters target classes/confidence, and applies enabled motion zones
 before handing detections to the tracker. It has no default camera loop or
 network side effect; deployment remains gated on labeled accuracy checks.
 
+[`metrics.py`](../../../src/stratios_edge_ai/private_camera/metrics.py) provides
+the labeled-frame gate: same-class IoU matching, aggregate precision/recall,
+and duplicate-prediction counts. Feed it annotations from the controlled test
+area; synthetic unit tests do not prove camera accuracy.
+
 ## Reproducible run records
 
 Each run should keep a text manifest outside Git containing:

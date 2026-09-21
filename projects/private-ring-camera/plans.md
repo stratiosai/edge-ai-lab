@@ -208,7 +208,7 @@ Create these implementation folders only as their milestone begins; do not add e
 - [x] Add configurable crossing lines and approach/departure direction. (Added normalized-coordinate crossing-line direction detection with a jitter deadband, one event per track, expiry reset, and tests; live-service wiring remains.)
 - [ ] Add event thumbnails, clips, class, confidence, zone, and count. (The private event schema and authenticated ingest/read API now persist the metadata contract; actual thumbnail/clip generation and detector wiring remain.)
 - [ ] Display live boxes and counts without baking overlays into original evidence video.
-- [ ] Measure false alerts during daylight, darkness, rain, glare, shadows, and partial occlusion.
+- [ ] Measure false alerts during daylight, darkness, rain, glare, shadows, and partial occlusion. (Added the reproducible labeled-frame metrics harness; real controlled-camera annotations and environmental runs remain.)
 - [ ] Retain an `unknown` outcome rather than forcing weak detections into a class.
 - [ ] Add deduplicated person/vehicle notifications only after event accuracy is measured.
 

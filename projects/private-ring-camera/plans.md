@@ -221,7 +221,7 @@ Create these implementation folders only as their milestone begins; do not add e
 - [x] Install and sign in to Tailscale on the Mac and Pi; verify both devices receive tailnet addresses and the three camera services remain active over the Pi's Tailscale address (`100.94.184.109`) on 2026-09-20. No router port was opened.
 - [x] Enable Tailscale HTTPS certificates and configure private Tailscale Serve on the Mac: `https://tindols-macbook-pro.tail133ca1.ts.net/` proxies to the local camera app over `https+insecure://127.0.0.1:8443`; Tailscale Funnel was explicitly left disabled. Pi-side HTTPS verification returned HTTP 200, and a clean browser rendered the protected camera sign-in page over the tailnet URL on 2026-09-20.
 - [x] Verify phone access away from home over Tailscale. (The operator confirmed the iOS Tailscale app works; the Mac tailnet status shows the online iOS peer `localhost` at `100.107.234.46` alongside the Pi at `100.94.184.109` on 2026-09-20. The camera URL is the tailnet-only HTTPS endpoint.)
-- [ ] Confirm no camera, API, database, or media port is publicly reachable.
+- [x] Confirm no camera, API, database, or media port is publicly reachable. (2026-09-21 audit: router has no forwarding/DMZ entries, UPnP/NAT-T is disabled, Tailscale Serve reports tailnet-only, and the Mac listener is only the authenticated HTTPS app on 8443; no Pi live or database listener is exposed on the Mac.)
 - [x] Document credential rotation, device loss, and account revocation in [`docs/runbook.md`](docs/runbook.md).
 
 **Gate:** remote viewing works only through the VPN and passes the same authentication tests as LAN access.
@@ -277,7 +277,7 @@ Record these for each milestone on the real Pi:
 - [x] Audio boundary: Version 1 is video-only; all audio capabilities are deferred.
 - [x] Notification scope: excluded from the core Version 1 gate and introduced with person/vehicle detection.
 - [ ] Notification rules and quiet hours for the later detection phase.
-- [ ] VPN choice and account recovery policy.
+- [x] VPN choice and account recovery policy. (Tailscale is the selected private VPN; the runbook documents lost-device revocation, session logout-all, credential rotation, and recovery without opening router ports.)
 - [ ] Measured acceptance targets for detection and vehicle counting.
 
 ## Initiative completion rule

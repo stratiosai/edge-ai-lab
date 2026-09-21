@@ -42,6 +42,16 @@ Record, for each candidate and input size:
 Do not enable notifications or automatic actions until these measurements are
 reviewed. Preserve an `unknown` result when confidence is weak.
 
+## Mac model baseline (2026-09-21)
+
+The existing Mac virtualenv ran both candidate models against one representative
+640×360 frame extracted from the private archive (the frame and model files are
+outside Git). At 320px input and CPU inference, `yolo26n` measured 7.53 ms
+median / 8.07 ms p95 over 10 iterations; `yolo26s` measured 12.06 ms median /
+12.52 ms p95. These are tooling sanity checks, not Pi acceptance evidence:
+both models still require a real Pi benchmark with thermal and throttling
+measurements before any detector is deployed.
+
 ## Reproducible run records
 
 Each run should keep a text manifest outside Git containing:
@@ -66,4 +76,3 @@ throttled=
 
 Never commit captured household frames, model binaries, credentials, or
 biometric data.
-

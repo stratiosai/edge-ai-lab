@@ -140,6 +140,11 @@ to a caller-selected private directory. It does not modify recordings or send
 events over the network, making it suitable for accuracy review before an
 always-on Pi service.
 
+[`render_proof_video.py`](render_proof_video.py) creates a short H.264 review
+clip from a selected private segment with detector boxes, confidence, stable
+track IDs, counts, and zone text. The proof clip is generated outside Git;
+the source segment is never overwritten.
+
 Run [`evaluate_accuracy.py`](evaluate_accuracy.py) on a private manifest when
 frames are labeled. Keep that manifest, frames, model binaries, and JSON
 results outside Git. The command reports aggregate and per-frame counts so the

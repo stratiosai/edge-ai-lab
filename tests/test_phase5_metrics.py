@@ -31,6 +31,19 @@ def test_aggregate_metrics_uses_counted_denominators() -> None:
     assert result.recall == 0.0
 
 
+def test_same_class_objects_are_not_duplicates_when_truth_has_two() -> None:
+    truth = [
+        LabeledObject("person", (0.0, 0.0, 0.4, 1.0)),
+        LabeledObject("person", (0.6, 0.0, 1.0, 1.0)),
+    ]
+    predictions = [
+        Detection("person", 0.9, (0.0, 0.0, 0.4, 1.0)),
+        Detection("person", 0.9, (0.6, 0.0, 1.0, 1.0)),
+    ]
+    result = evaluate_frame(truth, predictions)
+    assert result.duplicate_predictions == 0
+
+
 def test_invalid_iou_threshold_is_rejected() -> None:
     with pytest.raises(ValueError):
         evaluate_frame([], [], iou_threshold=1.1)

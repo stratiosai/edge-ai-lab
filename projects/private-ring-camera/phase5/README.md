@@ -74,9 +74,10 @@ files. This validates a sustained speed/thermal baseline, not event accuracy.
 The private labeling sample contains 12 manually reviewed frames from one
 controlled indoor segment. It has 14 labeled person instances. At the
 `yolo26n` model and 0.45 confidence threshold, the evaluator measured 14 true
-positive matches, 0 false positives, 0 false negatives, and 2 duplicate
-predictions. Precision and recall are therefore 1.00 for this sample, but the
-duplicate predictions and single indoor condition are not an acceptance gate;
+positive matches, 0 false positives, 0 false negatives, and 0 duplicate
+predictions. The duplicate metric was corrected to allow multiple labeled
+objects of the same class in one frame. Precision and recall are therefore
+1.00 for this sample, but the single indoor condition is not an acceptance gate;
 day/night/weather/occlusion coverage and temporal duplicate-count evaluation
 remain required before enabling unattended detection.
 

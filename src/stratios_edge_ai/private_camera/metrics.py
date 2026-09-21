@@ -61,10 +61,15 @@ def evaluate_frame(
         matched_predictions.add(prediction_index)
     true_positives = len(matched_truth)
     unmatched_predictions = len(predictions) - len(matched_predictions)
+    # A scene may legitimately contain multiple objects of the same class.
+    # Count only predictions beyond the number of labeled instances, rather
+    # than treating every second person/car as a duplicate.
+    truth_counts = Counter(item.label for item in truth)
+    prediction_counts = Counter(item.label for item in predictions)
     duplicate_predictions = sum(
-        max(0, count - 1)
-        for label, count in Counter(prediction.label for prediction in predictions).items()
-        if any(actual.label == label for actual in truth)
+        max(0, prediction_counts[label] - truth_counts.get(label, 0))
+        for label in prediction_counts
+        if truth_counts.get(label, 0)
     )
     return FrameMetrics(
         true_positives=true_positives,

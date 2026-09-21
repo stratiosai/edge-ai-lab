@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
+import json
 from dataclasses import dataclass
+from pathlib import Path
 
 import numpy as np
 
@@ -44,3 +46,12 @@ def apply_privacy_masks(frame: np.ndarray, masks: list[PrivacyMask]) -> np.ndarr
         bottom = max(top, min(height, round(mask.bottom * height)))
         output[top:bottom, left:right] = 0
     return output
+
+
+def load_privacy_masks(path: Path) -> list[PrivacyMask]:
+    """Load a JSON array of normalized masks from an owner-controlled file."""
+
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    if not isinstance(payload, list):
+        raise TypeError("privacy-mask file must contain a JSON array")
+    return [PrivacyMask(**item) for item in payload]

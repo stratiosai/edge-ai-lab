@@ -61,6 +61,8 @@ that blacks only a derived frame copy. An example disabled mask is included in
 [`configs/phase5-detection.example.toml`](../configs/phase5-detection.example.toml);
 the active indoor V1 does not enable it, and outdoor/shared-space deployment
 must configure and review masks first.
+The guarded Pi live-overlay CLI also accepts `--privacy-mask-file` with a JSON
+array of masks; the default service passes no file and remains unchanged.
 
 ## Mac model baseline (2026-09-21)
 

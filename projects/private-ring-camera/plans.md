@@ -272,7 +272,7 @@ Record these for each milestone on the real Pi:
 - [x] Recording mode: continuous short segments with motion markers on the timeline.
 - [x] Initial field-of-view boundary: controlled workspace or unused corner; exclude bedrooms, bathrooms, screens, private paperwork, and non-consenting people.
 - [x] Confirm the physical camera position from a real preview before continuous recording begins. (Operator approved the current indoor household placement on 2026-09-20; Version 1 remains local-only.)
-- [ ] Configure a privacy mask before any outdoor, shared-space, or otherwise privacy-sensitive deployment. (The opt-in normalized mask primitive and disabled example configuration are implemented; a real deployment mask has not been configured because V1 remains indoors.)
+- [ ] Configure a privacy mask before any outdoor, shared-space, or otherwise privacy-sensitive deployment. (The opt-in normalized mask primitive, disabled example configuration, and guarded live-overlay `--privacy-mask-file` wiring are implemented; a real deployment mask has not been configured because V1 remains indoors.)
 - [x] Placement sequence: controlled indoor test area first; window, driveway, or outdoor deployment only after Version 1 acceptance.
 - [x] Audio boundary: Version 1 is video-only; all audio capabilities are deferred.
 - [x] Notification scope: excluded from the core Version 1 gate and introduced with person/vehicle detection.

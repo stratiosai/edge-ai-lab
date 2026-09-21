@@ -126,6 +126,7 @@ def main() -> None:
     parser.add_argument("--overlay-sample-fps", type=float, default=2.0)
     parser.add_argument("--overlay-confidence", type=float, default=0.45)
     parser.add_argument("--overlay-motion-threshold", type=float, default=5.0)
+    parser.add_argument("--privacy-mask-file", type=Path)
     args = parser.parse_args()
     token = args.token_file.read_text(encoding="utf-8").strip()
     if not token:
@@ -140,12 +141,14 @@ def main() -> None:
     transform = None
     if args.enable_overlay:
         from .pi_overlay import LiveOverlay
+        from .privacy import load_privacy_masks
 
         transform = LiveOverlay(
             args.overlay_model,
             sample_fps=args.overlay_sample_fps,
             confidence=args.overlay_confidence,
             motion_threshold=args.overlay_motion_threshold,
+            privacy_masks=load_privacy_masks(args.privacy_mask_file) if args.privacy_mask_file else None,
         )
     frames = LatestJpeg(args.fifo, transform=transform)
     threading.Thread(target=frames.run, name="jpeg-reader", daemon=True).start()

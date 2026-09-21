@@ -236,6 +236,17 @@ on 2026-09-21 and exited with status 2, naming the missing darkness, rain,
 glare, shadows, and occlusion manifests; it cannot silently promote a
 single-condition sample to environmental acceptance.
 
+`create_synthetic_conditions.py` can generate deterministic darkness, glare,
+rain, shadow, and occlusion variants for smoke-testing this evaluator. These
+variants are explicitly synthetic and must never be used as real environmental
+acceptance evidence.
+
+The six-condition synthetic smoke run on 2026-09-21 exited `2` as intended:
+daylight 1.00/0.929 precision/recall, darkness 1.00/0.857, rain 0.667/0.286,
+glare 1.00/1.00, shadows 0.933/1.00 with one duplicate, and occlusion
+1.00/1.00. This is useful diagnostic coverage, not a substitute for real
+camera footage; the real-environment gate remains open.
+
 ## Reproducible run records
 
 Each run should keep a text manifest outside Git containing:

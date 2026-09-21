@@ -149,6 +149,12 @@ flag, so this hook must not be enabled until the labeled accuracy and
 environment checks below are accepted. It never sends notifications and never
 rewrites the original recording.
 
+The Pi MJPEG relay also has a separate live-only overlay gate. Passing
+`--enable-overlay --overlay-model /path/to/model.onnx` draws sampled boxes,
+track IDs, and counts on the browser stream while leaving archived MP4s
+untouched. The normal `edge-camera-live` service does not pass these flags;
+the CLI refuses to enable overlays without an explicit model.
+
 [`render_proof_video.py`](render_proof_video.py) creates a short H.264 review
 clip from a selected private segment with detector boxes, confidence, stable
 track IDs, counts, and zone text. The proof clip is generated outside Git;

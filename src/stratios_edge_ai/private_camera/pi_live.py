@@ -9,6 +9,7 @@ import os
 import select
 import ssl
 import threading
+from collections.abc import Callable
 from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
@@ -20,8 +21,9 @@ BOUNDARY = b"edge-camera-frame"
 class LatestJpeg:
     """Read JPEGs from a FIFO without letting disconnected viewers block capture."""
 
-    def __init__(self, fifo: Path) -> None:
+    def __init__(self, fifo: Path, transform: Callable[[bytes], bytes] | None = None) -> None:
         self.fifo = fifo
+        self.transform = transform
         self.frame: bytes | None = None
         self.condition = threading.Condition()
 
@@ -46,6 +48,11 @@ class LatestJpeg:
                         break
                     image = bytes(pending[start : end + 2])
                     del pending[: end + 2]
+                    if self.transform is not None:
+                        try:
+                            image = self.transform(image)
+                        except Exception:
+                            LOG.exception("live overlay failed; serving raw frame")
                     with self.condition:
                         self.frame = image
                         self.condition.notify_all()
@@ -114,6 +121,10 @@ def main() -> None:
     parser.add_argument("--port", type=int, default=8090)
     parser.add_argument("--tls-cert", type=Path)
     parser.add_argument("--tls-key", type=Path)
+    parser.add_argument("--overlay-model", type=Path)
+    parser.add_argument("--enable-overlay", action="store_true")
+    parser.add_argument("--overlay-sample-fps", type=float, default=2.0)
+    parser.add_argument("--overlay-confidence", type=float, default=0.45)
     args = parser.parse_args()
     token = args.token_file.read_text(encoding="utf-8").strip()
     if not token:
@@ -122,8 +133,19 @@ def main() -> None:
         raise RuntimeError(f"live FIFO is missing: {args.fifo}")
     if bool(args.tls_cert) != bool(args.tls_key):
         raise RuntimeError("set both --tls-cert and --tls-key for HTTPS")
+    if args.enable_overlay and args.overlay_model is None:
+        parser.error("--enable-overlay requires --overlay-model")
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
-    frames = LatestJpeg(args.fifo)
+    transform = None
+    if args.enable_overlay:
+        from .pi_overlay import LiveOverlay
+
+        transform = LiveOverlay(
+            args.overlay_model,
+            sample_fps=args.overlay_sample_fps,
+            confidence=args.overlay_confidence,
+        )
+    frames = LatestJpeg(args.fifo, transform=transform)
     threading.Thread(target=frames.run, name="jpeg-reader", daemon=True).start()
     server = ThreadingHTTPServer((args.host, args.port), make_handler(frames, token))
     if args.tls_cert and args.tls_key:

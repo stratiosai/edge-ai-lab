@@ -69,6 +69,17 @@ reported at both endpoints, and `throttled=0x0`. The Pi capture, live, and
 archive-agent services remained active and its bounded buffer remained at two
 files. This validates a sustained speed/thermal baseline, not event accuracy.
 
+## Controlled indoor accuracy baseline (2026-09-21)
+
+The private labeling sample contains 12 manually reviewed frames from one
+controlled indoor segment. It has 14 labeled person instances. At the
+`yolo26n` model and 0.45 confidence threshold, the evaluator measured 14 true
+positive matches, 0 false positives, 0 false negatives, and 2 duplicate
+predictions. Precision and recall are therefore 1.00 for this sample, but the
+duplicate predictions and single indoor condition are not an acceptance gate;
+day/night/weather/occlusion coverage and temporal duplicate-count evaluation
+remain required before enabling unattended detection.
+
 ## Tracking primitive
 
 [`tracking.py`](../../../src/stratios_edge_ai/private_camera/tracking.py)

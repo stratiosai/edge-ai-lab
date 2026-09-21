@@ -285,6 +285,22 @@ def test_retention_removes_expired_media_and_index(tmp_path: Path) -> None:
     assert client.get(f"/api/segments/{current_id}/media").status_code == 200
 
 
+def test_retention_uses_a_strict_24_hour_boundary(tmp_path: Path) -> None:
+    client = make_client(tmp_path)
+    csrf = login(client)
+    now = int(time.time())
+    expired_id = ingest(client, started_at=now - 86461, ended_at=now - 86401)
+    boundary_id = ingest(client, started_at=now - 86460, ended_at=now - 86400)
+
+    response = client.post("/api/retention/run", headers={"X-CSRF-Token": csrf})
+
+    assert response.status_code == 200
+    assert expired_id in response.json()["expired_segment_ids"]
+    assert boundary_id not in response.json()["expired_segment_ids"]
+    assert client.get(f"/api/segments/{expired_id}/media").status_code == 404
+    assert client.get(f"/api/segments/{boundary_id}/media").status_code == 200
+
+
 def test_startup_retention_removes_only_expired_recordings(tmp_path: Path) -> None:
     config = CameraServerConfig(
         data_dir=tmp_path / "private-camera",

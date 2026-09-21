@@ -42,6 +42,20 @@ Record, for each candidate and input size:
 Do not enable notifications or automatic actions until these measurements are
 reviewed. Preserve an `unknown` result when confidence is weak.
 
+## Initial acceptance targets
+
+The first unattended-detection review uses explicit, conservative targets:
+
+- per-condition precision ≥ 0.90;
+- per-condition recall ≥ 0.90;
+- zero duplicate predictions after same-class matching;
+- person/vehicle count error of no more than one event per reviewed clip;
+- no notification enablement until every required environment has passed.
+
+These are review criteria, not claimed results. `evaluate_environment.py`
+enforces the precision, recall, and duplicate limits; the count-error target
+is reviewed from the replay/event report.
+
 ## Mac model baseline (2026-09-21)
 
 The existing Mac virtualenv ran both candidate models against one representative

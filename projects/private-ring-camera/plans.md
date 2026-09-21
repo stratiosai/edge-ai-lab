@@ -278,7 +278,7 @@ Record these for each milestone on the real Pi:
 - [x] Notification scope: excluded from the core Version 1 gate and introduced with person/vehicle detection.
 - [ ] Notification rules and quiet hours for the later detection phase.
 - [x] VPN choice and account recovery policy. (Tailscale is the selected private VPN; the runbook documents lost-device revocation, session logout-all, credential rotation, and recovery without opening router ports.)
-- [ ] Measured acceptance targets for detection and vehicle counting.
+- [x] Define measured acceptance targets for detection and vehicle counting. (Phase 5 documents initial review targets of ≥0.90 precision and recall per required environment, zero duplicate predictions, and no more than one count error per reviewed clip; measured real-environment results remain a separate unchecked gate.)
 
 ## Initiative completion rule
 
